@@ -18,6 +18,7 @@ public:
     void use() const;
 
     inline void setMat4(const std::string& name, const glm::mat4& value) { glUniformMatrix4fv(getUniformLocation(name), 1, GL_FALSE, glm::value_ptr(value)); }
+    inline void setVec3(const std::string& name, const glm::vec3& value) { glUniform3fv(getUniformLocation(name), 1, glm::value_ptr(value)); }
 
 private:
     unsigned int compileShader(const char* source, GLenum type);

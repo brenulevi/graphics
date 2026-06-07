@@ -1,13 +1,5 @@
 #include "gameobject.h"
 
-GameObject::GameObject()
-{
-}
-
-GameObject::~GameObject()
-{
-}
-
 void GameObject::start()
 {
     for (const auto &component : m_components)

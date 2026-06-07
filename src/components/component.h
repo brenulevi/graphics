@@ -14,7 +14,6 @@ public:
     virtual void start() {}
     virtual void update(float deltaTime) {}
 
-protected:
     inline GameObject* getOwner() const { return m_owner; }
 
 private:

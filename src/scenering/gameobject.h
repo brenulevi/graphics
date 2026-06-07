@@ -8,8 +8,8 @@
 class GameObject
 {
 public:
-    GameObject();
-    ~GameObject();
+    GameObject() = default;
+    ~GameObject() = default;
 
     template <typename T, typename... Args>
     T *addComponent(Args &&...args);

@@ -1,24 +1,21 @@
 #include <iostream>
-#include <memory>
 
-#include "window.h"
-#include "rendering/renderer.h"
+#include "application.h"
 
 int main()
 {
     std::cout << "Hello, World!" << std::endl;
 
-    std::unique_ptr<Window> window = std::make_unique<Window>(800, 600, "My Game");
-    std::unique_ptr<Renderer> renderer = std::make_unique<Renderer>();
-
-    while (!window->shouldClose())
+    try
     {
-        window->pollEvents();
-
-        renderer->clear();
-
-        window->swapBuffers();
+        Application app;
+        app.run();
+    }
+    catch (const std::exception& e)
+    {
+        std::cerr << "Error: " << e.what() << std::endl;
+        return EXIT_FAILURE;
     }
 
-    return 0;
+    return EXIT_SUCCESS;
 }

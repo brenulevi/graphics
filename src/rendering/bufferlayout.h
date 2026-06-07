@@ -26,9 +26,16 @@ struct BufferElement
 class BufferLayout
 {
 public:
-    BufferLayout();
-    BufferLayout(std::initializer_list<BufferElement> elements);
-    ~BufferLayout();
+    BufferLayout() : m_stride(0) {}
+    BufferLayout(std::initializer_list<BufferElement> elements)
+        : m_elements(elements), m_stride(0)
+    {
+        for (const auto& element : m_elements)
+        {
+            m_stride += element.count * BufferElement::getSizeOfType(element.type);
+        }
+    }
+    ~BufferLayout() = default;
 
     template<typename T>
     void push(unsigned int count);

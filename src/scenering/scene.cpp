@@ -1,13 +1,5 @@
 #include "scene.h"
 
-Scene::Scene()
-{
-}
-
-Scene::~Scene()
-{
-}
-
 GameObject *Scene::createGameObject()
 {
     auto gameObject = std::make_unique<GameObject>();

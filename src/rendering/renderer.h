@@ -4,16 +4,26 @@
 #include <GLFW/glfw3.h>
 #include <stdexcept>
 
+#include "components/camera.h"
+#include "components/transform.h"
+#include "rendering/mesh.h"
+#include "rendering/material.h"
+
 class Renderer
 {
 public:
     Renderer();
-    ~Renderer();
+    ~Renderer() = default;
 
     void clear() const;
 
-    static inline Renderer* getInstance() { return s_instance; }
+    void beginScene(const Transform& cameraTransform, const Camera& camera);
+    void draw(const Transform& transform, const Mesh& mesh, const Material& material);
+    void endScene();
+
+    void setViewportSize(float width, float height);
 
 private:
-    static Renderer* s_instance;
+    glm::mat4 m_viewProjectionMatrix;
+    glm::vec2 m_viewportSize;
 };

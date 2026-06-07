@@ -15,6 +15,28 @@ Window::Window(int width, int height, const std::string& title)
     }
 
     glfwMakeContextCurrent(m_window);
+    glfwSetWindowUserPointer(m_window, this);
+
+    glfwSetFramebufferSizeCallback(m_window, [](GLFWwindow* window, int width, int height) {
+        Window* win = static_cast<Window*>(glfwGetWindowUserPointer(window));
+
+        win->m_width = width;
+        win->m_height = height;
+
+        if (win->m_resizeCallback)
+        {
+            win->m_resizeCallback(width, height);
+        }
+    });
+
+    glfwSetWindowCloseCallback(m_window, [](GLFWwindow* window) {
+        Window* win = static_cast<Window*>(glfwGetWindowUserPointer(window));
+
+        if (win->m_closeCallback)
+        {
+            win->m_closeCallback();
+        }
+    });
 }
 
 Window::~Window()
@@ -28,12 +50,20 @@ void Window::pollEvents()
     glfwPollEvents();
 }
 
-bool Window::shouldClose()
-{
-    return glfwWindowShouldClose(m_window);
-}
-
 void Window::swapBuffers()
 {
     glfwSwapBuffers(m_window);
+}
+
+void Window::setTitle(const std::string &title)
+{
+    m_title = title;
+    glfwSetWindowTitle(m_window, m_title.c_str());
+}
+
+void Window::setSize(int width, int height)
+{
+    m_width = width;
+    m_height = height;
+    glfwSetWindowSize(m_window, m_width, m_height);
 }
