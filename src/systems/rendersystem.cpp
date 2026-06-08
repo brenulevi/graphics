@@ -15,17 +15,41 @@ void RenderSystem::render(Scene &scene, Renderer &renderer)
     SceneData sceneData{
         .viewProjectionMatrix = mainCamera->getProjectionMatrix(renderer.getAspectRatio()) * cameraTransform->getViewMatrix(),
         .cameraPosition = cameraTransform->getPosition(),
-        .lightDirection = glm::vec3(0.0f, -1.0f, 0.0f),
-        .lightColor = glm::vec3(1.0f),
-        .lightIntensity = 0.0f
+        .directionalLight = {
+            .direction = glm::vec3(0.0f, -1.0f, 0.0f),
+            .color = glm::vec3(1.0f),
+            .intensity = 0.0f
+        }
     };
 
     auto directionalLight = scene.getComponents<DirectionalLight>();
     if (!directionalLight.empty())
     {
-        sceneData.lightDirection = directionalLight[0]->getOwner()->getComponent<Transform>()->getForward();
-        sceneData.lightColor = directionalLight[0]->getColor();
-        sceneData.lightIntensity = directionalLight[0]->getIntensity();
+        auto directionalLightTransform = directionalLight[0]->getOwner()->getComponent<Transform>();
+        if (!directionalLightTransform)
+            throw std::runtime_error("Directional light has no transform component.");
+
+        sceneData.directionalLight.direction = directionalLightTransform->getForward();
+        sceneData.directionalLight.color = directionalLight[0]->getColor();
+        sceneData.directionalLight.intensity = directionalLight[0]->getIntensity();
+    }
+
+    auto pointLights = scene.getComponents<PointLight>();
+    for (PointLight *pointLight : pointLights)
+    {
+        auto pointLightTransform = pointLight->getOwner()->getComponent<Transform>();
+        if (!pointLightTransform)
+            throw std::runtime_error("Point light has no transform component.");
+
+        PointLightData pointLightData{
+            .position = pointLightTransform->getPosition(),
+            .color = pointLight->getColor(),
+            .intensity = pointLight->getIntensity(),
+            .constant = pointLight->getConstant(),
+            .linear = pointLight->getLinear(),
+            .quadratic = pointLight->getQuadratic()
+        };
+        sceneData.pointLights.push_back(pointLightData);
     }
 
     renderer.beginScene(sceneData);

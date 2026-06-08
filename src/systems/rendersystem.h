@@ -7,7 +7,8 @@
 #include "components/camera.h"
 #include "components/meshrenderer.h"
 #include "components/transform.h"
-#include "components/directionalLight.h"
+#include "components/directionallight.h"
+#include "components/pointlight.h"
 
 class RenderSystem
 {

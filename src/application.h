@@ -10,7 +10,8 @@
 #include "scenering/scene.h"
 #include "components/rotationcomponent.h"
 #include "components/translatecomponent.h"
-#include "components/directionalLight.h"
+#include "components/directionallight.h"
+#include "components/pointlight.h"
 #include "components/playercontroller.h"
 
 class Application

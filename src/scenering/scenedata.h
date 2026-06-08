@@ -3,13 +3,30 @@
 #include <glm/glm.hpp>
 #include <vector>
 
+struct DirectionalLightData
+{
+    glm::vec3 direction;
+    glm::vec3 color;
+    float intensity;
+};
+
+struct PointLightData
+{
+    glm::vec3 position;
+    glm::vec3 color;
+    float intensity;
+
+    float constant;
+    float linear;
+    float quadratic;
+};
+
 struct SceneData
 {
     glm::mat4 viewProjectionMatrix;
     
     glm::vec3 cameraPosition;
     
-    glm::vec3 lightDirection;
-    glm::vec3 lightColor;
-    float lightIntensity;
+    DirectionalLightData directionalLight;
+    std::vector<PointLightData> pointLights;
 };

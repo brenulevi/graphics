@@ -10,6 +10,8 @@
 #include "rendering/material.h"
 #include "scenering/scenedata.h"
 
+#define MAX_POINT_LIGHTS 4
+
 class Renderer
 {
 public:

@@ -69,6 +69,7 @@ Application::Application()
     cube->addComponent<Transform>();
     cube->addComponent<MeshRenderer>(mesh, material);
     cube->addComponent<RotationComponent>(25.0f);
+    // cube->addComponent<TranslateComponent>(1.0f);
 
     auto player = m_scene->createGameObject();
     auto playerTransform = player->addComponent<Transform>(glm::vec3(0.0f, 0.0f, 2.0f));
@@ -77,10 +78,16 @@ Application::Application()
     player->addComponent<PlayerController>(5.0f, 0.1f);
     m_scene->setMainCamera(camera);
 
-    auto light = m_scene->createGameObject();
-    auto lightTransform = light->addComponent<Transform>(glm::vec3(0.0f, 5.0f, 0.0f));
+    auto sun = m_scene->createGameObject();
+    auto lightTransform = sun->addComponent<Transform>(glm::vec3(0.0f, 5.0f, 0.0f));
     lightTransform->setRotation(glm::vec3(-90.0f, 0.0f, 0.0f));
-    light->addComponent<DirectionalLight>(glm::vec3(1.0f), 1.0f);
+    sun->addComponent<DirectionalLight>(glm::vec3(1.0f), 1.0f);
+
+    auto pointLight = m_scene->createGameObject();
+    auto pointLightTransform = pointLight->addComponent<Transform>(glm::vec3(2.0f, 1.0f, 0.0f));
+    pointLightTransform->setScale(glm::vec3(0.2f));
+    pointLight->addComponent<PointLight>(glm::vec3(1.0f, 1.0f, 1.0f), 1.0f, 1.0f, 0.14f, 0.07f);
+    pointLight->addComponent<MeshRenderer>(mesh, material);
 
     m_scene->start();
 }

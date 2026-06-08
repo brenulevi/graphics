@@ -69,7 +69,8 @@ add_executable(MyGame
     src/components/translatecomponent.h
     src/components/translatecomponent.cpp
     src/components/light.h
-    src/components/directionalLight.h
+    src/components/directionallight.h
+    src/components/pointlight.h
     src/components/playercontroller.h
     src/components/playercontroller.cpp
 )
