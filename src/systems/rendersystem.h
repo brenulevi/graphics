@@ -6,6 +6,8 @@
 #include "rendering/renderer.h"
 #include "components/camera.h"
 #include "components/meshrenderer.h"
+#include "components/transform.h"
+#include "components/directionalLight.h"
 
 class RenderSystem
 {

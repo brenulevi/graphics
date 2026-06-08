@@ -1,20 +1,19 @@
 #pragma once
 
-#include <stdexcept>
-
 #include "component.h"
 #include "scenering/gameobject.h"
 #include "transform.h"
 
-class RotationComponent : public Component
+class TranslateComponent : public Component
 {
 public:
-    RotationComponent(GameObject* owner, float speed = 90.0f);
-    ~RotationComponent() = default;
+    TranslateComponent(GameObject* owner, float speed);
+    ~TranslateComponent() = default;
 
     void start() override;
     void update(float deltaTime) override;
 
 private:
     float m_speed;
+    float m_totalTime = 0.0f;
 };

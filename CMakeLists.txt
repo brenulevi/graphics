@@ -4,11 +4,22 @@ project(MyGame)
 
 set(CMAKE_CXX_STANDARD 17)
 
+if (CMAKE_SYSTEM_NAME STREQUAL "Windows")
+    set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
+    set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+    set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -static-libgcc -static-libstdc++")
+endif()
+
 add_subdirectory("external/glfw")
 add_subdirectory("external/glad/cmake")
 add_subdirectory("external/glm")
 
 glad_add_library(glad STATIC API gl:core=3.3)
+
+if (CMAKE_SYSTEM_NAME STREQUAL "Windows")
+    set(OPENGL_gl_LIBRARY opengl32)
+endif()
 
 find_package(OpenGL REQUIRED)
 
@@ -19,6 +30,8 @@ add_executable(MyGame
     src/window.cpp
     src/application.h
     src/application.cpp
+    src/input.h
+    src/input.cpp
 
     src/rendering/shader.h
     src/rendering/shader.cpp
@@ -51,8 +64,14 @@ add_executable(MyGame
     src/components/transform.cpp
     src/components/meshrenderer.h
     src/components/camera.h
-    src/components/rotationComponent.h
-    src/components/rotationComponent.cpp
+    src/components/rotationcomponent.h
+    src/components/rotationcomponent.cpp
+    src/components/translatecomponent.h
+    src/components/translatecomponent.cpp
+    src/components/light.h
+    src/components/directionalLight.h
+    src/components/playercontroller.h
+    src/components/playercontroller.cpp
 )
 
 target_include_directories(MyGame PRIVATE

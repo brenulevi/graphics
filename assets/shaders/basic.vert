@@ -9,10 +9,17 @@ uniform mat4 u_Model;
 
 out vec3 v_Normal;
 out vec2 v_TexCoord;
+out vec3 v_FragPos;
 
 void main()
 {
-    v_Normal = i_Normal;
+    vec4 worldPos = u_Model * vec4(i_Pos, 1.0);
+
+    v_FragPos = worldPos.xyz;
+
+    v_Normal = mat3(transpose(inverse(u_Model))) * i_Normal; // Transform normal to world space
+    
     v_TexCoord = i_TexCoord;
-    gl_Position = u_ViewProjection * u_Model * vec4(i_Pos, 1.0);
+
+    gl_Position = u_ViewProjection * worldPos;
 }

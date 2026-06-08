@@ -14,38 +14,73 @@ Application::Application()
     m_scene = std::make_unique<Scene>();
 
     std::shared_ptr<Shader> shader = std::make_shared<Shader>("assets/shaders/basic.vert", "assets/shaders/basic.frag");
-    std::shared_ptr<Material> material = std::make_shared<Material>(shader);
+    std::shared_ptr<Texture> diffuse = std::make_shared<Texture>("assets/textures/foto.png");
+    std::shared_ptr<Texture> specular = std::make_shared<Texture>("assets/textures/specular.png");
+    std::shared_ptr<Material> material = std::make_shared<Material>(shader, diffuse, specular, 32.0f);
 
     std::vector<Vertex> vertices = {
-        { { -0.5f, -0.5f, -0.5f }, { -1.0f, -1.0f, -1.0f }, { 0.0f, 0.0f } },
-        { {  0.5f, -0.5f, -0.5f }, {  1.0f, -1.0f, -1.0f }, { 1.0f, 0.0f } },
-        { {  0.5f,  0.5f, -0.5f }, {  1.0f,  1.0f, -1.0f }, { 1.0f, 1.0f } },
-        { { -0.5f,  0.5f, -0.5f }, { -1.0f,  1.0f, -1.0f }, { 0.0f, 1.0f } },
-        { { -0.5f, -0.5f,  0.5f }, { -1.0f, -1.0f,  1.0f }, { 0.0f, 0.0f } },
-        { {  0.5f, -0.5f,  0.5f }, {  1.0f, -1.0f,  1.0f }, { 1.0f, 0.0f } },
-        { {  0.5f,  0.5f,  0.5f }, {  1.0f,  1.0f,  1.0f }, { 1.0f, 1.0f } },
-        { { -0.5f,  0.5f,  0.5f }, { -1.0f,  1.0f,  1.0f }, { 0.0f, 1.0f } }
+        // Front face (z =  0.5)
+        {{-0.5f, -0.5f,  0.5f}, {0.0f, 0.0f, 1.0f}, {0.0f, 0.0f}},
+        {{ 0.5f, -0.5f,  0.5f}, {0.0f, 0.0f, 1.0f}, {1.0f, 0.0f}},
+        {{ 0.5f,  0.5f,  0.5f}, {0.0f, 0.0f, 1.0f}, {1.0f, 1.0f}},
+        {{-0.5f,  0.5f,  0.5f}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f}},
+
+        // Back face (z = -0.5)
+        {{ 0.5f, -0.5f, -0.5f}, {0.0f, 0.0f,-1.0f}, {0.0f, 0.0f}},
+        {{-0.5f, -0.5f, -0.5f}, {0.0f, 0.0f,-1.0f}, {1.0f, 0.0f}},
+        {{-0.5f,  0.5f, -0.5f}, {0.0f, 0.0f,-1.0f}, {1.0f, 1.0f}},
+        {{ 0.5f,  0.5f, -0.5f}, {0.0f, 0.0f,-1.0f}, {0.0f, 1.0f}},
+
+        // Left face (x = -0.5)
+        {{-0.5f, -0.5f, -0.5f}, {-1.0f, 0.0f, 0.0f}, {0.0f, 0.0f}},
+        {{-0.5f, -0.5f,  0.5f}, {-1.0f, 0.0f, 0.0f}, {1.0f, 0.0f}},
+        {{-0.5f,  0.5f,  0.5f}, {-1.0f, 0.0f, 0.0f}, {1.0f, 1.0f}},
+        {{-0.5f,  0.5f, -0.5f}, {-1.0f, 0.0f, 0.0f}, {0.0f, 1.0f}},
+
+        // Right face (x = 0.5)
+        {{ 0.5f, -0.5f,  0.5f}, {1.0f, 0.0f, 0.0f}, {0.0f, 0.0f}},
+        {{ 0.5f, -0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}, {1.0f, 0.0f}},
+        {{ 0.5f,  0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}, {1.0f, 1.0f}},
+        {{ 0.5f,  0.5f,  0.5f}, {1.0f, 0.0f, 0.0f}, {0.0f, 1.0f}},
+
+        // Top face (y = 0.5)
+        {{-0.5f,  0.5f,  0.5f}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}},
+        {{ 0.5f,  0.5f,  0.5f}, {0.0f, 1.0f, 0.0f}, {1.0f, 0.0f}},
+        {{ 0.5f,  0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}, {1.0f, 1.0f}},
+        {{-0.5f,  0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}, {0.0f, 1.0f}},
+
+        // Bottom face (y = -0.5)
+        {{-0.5f, -0.5f, -0.5f}, {0.0f,-1.0f, 0.0f}, {0.0f, 0.0f}},
+        {{ 0.5f, -0.5f, -0.5f}, {0.0f,-1.0f, 0.0f}, {1.0f, 0.0f}},
+        {{ 0.5f, -0.5f,  0.5f}, {0.0f,-1.0f, 0.0f}, {1.0f, 1.0f}},
+        {{-0.5f, -0.5f,  0.5f}, {0.0f,-1.0f, 0.0f}, {0.0f, 1.0f}}
     };
     std::vector<unsigned int> indices = {
-        4, 5, 6, 6, 7, 4,
-        1, 0, 3, 3, 2, 1,
-        0, 4, 7, 7, 3, 0,
-        5, 1, 2, 2, 6, 5,
-        3, 7, 6, 6, 2, 3,
-        0, 1, 5, 5, 4, 0
+        0, 1, 2, 2, 3, 0,       // Front
+        4, 5, 6, 6, 7, 4,       // Back
+        8, 9,10,10,11, 8,       // Left
+       12,13,14,14,15,12,       // Right
+       16,17,18,18,19,16,       // Top
+       20,21,22,22,23,20        // Bottom
     };
     std::shared_ptr<Mesh> mesh = std::make_shared<Mesh>(vertices, indices);
 
     auto cube = m_scene->createGameObject();
     cube->addComponent<Transform>();
     cube->addComponent<MeshRenderer>(mesh, material);
-    cube->addComponent<RotationComponent>();
+    cube->addComponent<RotationComponent>(25.0f);
 
     auto player = m_scene->createGameObject();
-    auto playerTransform = player->addComponent<Transform>(glm::vec3(0.0f, 0.0f, 3.0f));
+    auto playerTransform = player->addComponent<Transform>(glm::vec3(0.0f, 0.0f, 2.0f));
     playerTransform->setRotation(glm::vec3(0.0f, -90.0f, 0.0f));
     auto camera = player->addComponent<Camera>();
+    player->addComponent<PlayerController>(5.0f, 0.1f);
     m_scene->setMainCamera(camera);
+
+    auto light = m_scene->createGameObject();
+    auto lightTransform = light->addComponent<Transform>(glm::vec3(0.0f, 5.0f, 0.0f));
+    lightTransform->setRotation(glm::vec3(-90.0f, 0.0f, 0.0f));
+    light->addComponent<DirectionalLight>(glm::vec3(1.0f), 1.0f);
 
     m_scene->start();
 }
@@ -61,6 +96,7 @@ void Application::run()
         lastFrame = currentFrame;
 
         m_window->pollEvents();
+        Input::update();
 
         m_scene->update(deltaTime);
 

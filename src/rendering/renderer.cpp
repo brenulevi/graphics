@@ -1,7 +1,7 @@
 #include "renderer.h"
 
 Renderer::Renderer()
-    : m_viewProjectionMatrix(1.0f), m_viewportSize(800.0f, 600.0f)
+    : m_viewportSize(800.0f, 600.0f)
 {
     if(!gladLoadGL((GLADloadfunc)glfwGetProcAddress))
     {
@@ -16,15 +16,16 @@ void Renderer::clear() const
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
-void Renderer::beginScene(const Transform &cameraTransform, const Camera &camera)
+void Renderer::beginScene(const SceneData &sceneData)
 {
-    float aspectRatio = m_viewportSize.x / m_viewportSize.y;
-    m_viewProjectionMatrix = camera.getProjectionMatrix(aspectRatio) * cameraTransform.getViewMatrix();
+    m_sceneData = sceneData;
 }
 
 void Renderer::draw(const Transform &transform, const Mesh &mesh, const Material &material)
 {
     auto shader = material.getShader();
+    auto diffuse = material.getDiffuse();
+    auto specular = material.getSpecular();
 
     if(!shader)
     {
@@ -33,9 +34,26 @@ void Renderer::draw(const Transform &transform, const Mesh &mesh, const Material
 
     shader->use();
 
-    shader->setVec3("u_Color", material.getColor());
+    if(diffuse)
+    {
+        diffuse->bind(0);
+        shader->setInt("u_Material.diffuse", 0);
+    }
 
-    shader->setMat4("u_ViewProjection", m_viewProjectionMatrix);
+    if(specular)
+    {
+        specular->bind(1);
+        shader->setInt("u_Material.specular", 1);
+    }
+
+    shader->setFloat("u_Material.shininess", material.getShininess());
+
+    shader->setVec3("u_ViewPos", m_sceneData.cameraPosition);
+    shader->setVec3("u_Light.direction", m_sceneData.lightDirection);
+    shader->setVec3("u_Light.color", m_sceneData.lightColor);
+    shader->setFloat("u_Light.intensity", m_sceneData.lightIntensity);
+
+    shader->setMat4("u_ViewProjection", m_sceneData.viewProjectionMatrix);
     shader->setMat4("u_Model", transform.getModelMatrix());
 
     mesh.bind();

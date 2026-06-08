@@ -4,6 +4,7 @@ class GameObject;
 
 class Component
 {
+friend class RenderSystem;
 public:
     Component(GameObject* owner)
         : m_owner(owner)
@@ -14,6 +15,7 @@ public:
     virtual void start() {}
     virtual void update(float deltaTime) {}
 
+protected:
     inline GameObject* getOwner() const { return m_owner; }
 
 private:

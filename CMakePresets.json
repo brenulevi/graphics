@@ -1,0 +1,30 @@
+{
+  "version": 5,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 20,
+    "patch": 0
+  },
+  "configurePresets": [
+    {
+      "name": "windows-cross",
+      "displayName": "Windows Cross Compile (MinGW)",
+      "description": "Configure MyGame for Windows using the MinGW cross toolchain.",
+      "generator": "Unix Makefiles",
+      "binaryDir": "${sourceDir}/build-windows-preset",
+      "toolchainFile": "${sourceDir}/mingw-toolchain.cmake",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "GLFW_BUILD_DOCS": "OFF",
+        "GLFW_BUILD_EXAMPLES": "OFF",
+        "GLFW_BUILD_TESTS": "OFF"
+      }
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "windows-cross",
+      "configurePreset": "windows-cross"
+    }
+  ]
+}

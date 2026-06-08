@@ -1,11 +1,7 @@
-#include "rotationComponent.h"
+#include "rotationcomponent.h"
 
 RotationComponent::RotationComponent(GameObject *owner, float speed)
     : Component(owner), m_speed(speed)
-{
-}
-
-void RotationComponent::start()
 {
 }
 

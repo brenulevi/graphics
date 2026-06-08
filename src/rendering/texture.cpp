@@ -40,11 +40,5 @@ unsigned char *Texture::loadTextureFromFile(const char *path)
         throw std::runtime_error("Failed to load texture: " + std::string(path));
     }
 
-    if(m_channels != 4)
-    {
-        stbi_image_free(data);
-        throw std::runtime_error("Texture must have 4 channels (RGBA): " + std::string(path));
-    }
-
     return data;
 }

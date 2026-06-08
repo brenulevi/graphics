@@ -5,9 +5,13 @@
 
 #include "window.h"
 #include "rendering/renderer.h"
+#include "input.h"
 #include "systems/rendersystem.h"
 #include "scenering/scene.h"
-#include "components/rotationComponent.h"
+#include "components/rotationcomponent.h"
+#include "components/translatecomponent.h"
+#include "components/directionalLight.h"
+#include "components/playercontroller.h"
 
 class Application
 {
