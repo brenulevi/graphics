@@ -6,8 +6,8 @@ class Component
 {
 friend class RenderSystem;
 public:
-    Component(GameObject* owner)
-        : m_owner(owner)
+    Component(GameObject* gameObject)
+        : m_gameObject(gameObject)
     {
     }
     virtual ~Component() = default;
@@ -16,8 +16,8 @@ public:
     virtual void update(float deltaTime) {}
 
 protected:
-    inline GameObject* getOwner() const { return m_owner; }
+    inline GameObject* getGameObject() const { return m_gameObject; }
 
 private:
-    GameObject* m_owner;
+    GameObject* m_gameObject;
 };

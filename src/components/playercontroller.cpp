@@ -7,6 +7,14 @@ PlayerController::PlayerController(GameObject *owner, float moveSpeed, float sen
 
 void PlayerController::start()
 {
+    auto transform = getGameObject()->getComponent<Transform>();
+    if (!transform)
+        throw std::runtime_error("PlayerController requires a Transform component");
+
+    auto localRotation = transform->getLocalRotationEuler();
+    m_yaw = localRotation.y;
+    m_pitch = localRotation.x;
+
     Input::setCursorMode(GLFW_CURSOR_DISABLED);
 }
 
@@ -26,7 +34,7 @@ void PlayerController::update(float deltaTime)
         else
             return;
 
-    auto transform = getOwner()->getComponent<Transform>();
+    auto transform = getGameObject()->getComponent<Transform>();
     if (!transform)
         throw std::runtime_error("PlayerController requires a Transform component");
 
@@ -57,11 +65,11 @@ void PlayerController::update(float deltaTime)
         m_firstMouse = false;
     }
 
-    m_yaw += mouseDelta.x * m_sensitivity;
+    m_yaw -= mouseDelta.x * m_sensitivity;
     m_pitch -= mouseDelta.y * m_sensitivity;
 
     m_pitch = glm::clamp(m_pitch, -89.0f, 89.0f);
     m_yaw = std::fmod(m_yaw, 360.0f);
 
-    transform->setRotation(glm::vec3(m_pitch, m_yaw, 0.0f));
+    transform->setLocalRotationEuler(glm::vec3(m_pitch, m_yaw, 0.0f));
 }

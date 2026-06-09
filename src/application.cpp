@@ -13,84 +13,97 @@ Application::Application()
 
     m_scene = std::make_unique<Scene>();
 
-    std::shared_ptr<Shader> shader = std::make_shared<Shader>("assets/shaders/basic.vert", "assets/shaders/basic.frag");
-    std::shared_ptr<Texture> diffuse = std::make_shared<Texture>("assets/textures/container.png");
-    std::shared_ptr<Texture> specular = std::make_shared<Texture>("assets/textures/container_specular.png");
-    std::shared_ptr<Material> material = std::make_shared<Material>(shader, diffuse, specular, 32.0f);
+    AssetManager::loadShader("default", "assets/shaders/basic.vert", "assets/shaders/basic.frag");
+    AssetManager::loadTexture("container_diffuse", "assets/textures/container.png");
+    AssetManager::loadTexture("container_specular", "assets/textures/container_specular.png");
+    std::shared_ptr<Material> material = std::make_shared<Material>(
+        AssetManager::getShader("default"),
+        AssetManager::getTexture("container_diffuse"),
+        AssetManager::getTexture("container_specular"),
+        32.0f);
 
     std::vector<Vertex> vertices = {
         // Front face (z =  0.5)
-        {{-0.5f, -0.5f,  0.5f}, {0.0f, 0.0f, 1.0f}, {0.0f, 0.0f}},
-        {{ 0.5f, -0.5f,  0.5f}, {0.0f, 0.0f, 1.0f}, {1.0f, 0.0f}},
-        {{ 0.5f,  0.5f,  0.5f}, {0.0f, 0.0f, 1.0f}, {1.0f, 1.0f}},
-        {{-0.5f,  0.5f,  0.5f}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f}},
+        {{-0.5f, -0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}, {0.0f, 0.0f}},
+        {{0.5f, -0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}, {1.0f, 0.0f}},
+        {{0.5f, 0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}, {1.0f, 1.0f}},
+        {{-0.5f, 0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f}},
 
         // Back face (z = -0.5)
-        {{ 0.5f, -0.5f, -0.5f}, {0.0f, 0.0f,-1.0f}, {0.0f, 0.0f}},
-        {{-0.5f, -0.5f, -0.5f}, {0.0f, 0.0f,-1.0f}, {1.0f, 0.0f}},
-        {{-0.5f,  0.5f, -0.5f}, {0.0f, 0.0f,-1.0f}, {1.0f, 1.0f}},
-        {{ 0.5f,  0.5f, -0.5f}, {0.0f, 0.0f,-1.0f}, {0.0f, 1.0f}},
+        {{0.5f, -0.5f, -0.5f}, {0.0f, 0.0f, -1.0f}, {0.0f, 0.0f}},
+        {{-0.5f, -0.5f, -0.5f}, {0.0f, 0.0f, -1.0f}, {1.0f, 0.0f}},
+        {{-0.5f, 0.5f, -0.5f}, {0.0f, 0.0f, -1.0f}, {1.0f, 1.0f}},
+        {{0.5f, 0.5f, -0.5f}, {0.0f, 0.0f, -1.0f}, {0.0f, 1.0f}},
 
         // Left face (x = -0.5)
         {{-0.5f, -0.5f, -0.5f}, {-1.0f, 0.0f, 0.0f}, {0.0f, 0.0f}},
-        {{-0.5f, -0.5f,  0.5f}, {-1.0f, 0.0f, 0.0f}, {1.0f, 0.0f}},
-        {{-0.5f,  0.5f,  0.5f}, {-1.0f, 0.0f, 0.0f}, {1.0f, 1.0f}},
-        {{-0.5f,  0.5f, -0.5f}, {-1.0f, 0.0f, 0.0f}, {0.0f, 1.0f}},
+        {{-0.5f, -0.5f, 0.5f}, {-1.0f, 0.0f, 0.0f}, {1.0f, 0.0f}},
+        {{-0.5f, 0.5f, 0.5f}, {-1.0f, 0.0f, 0.0f}, {1.0f, 1.0f}},
+        {{-0.5f, 0.5f, -0.5f}, {-1.0f, 0.0f, 0.0f}, {0.0f, 1.0f}},
 
         // Right face (x = 0.5)
-        {{ 0.5f, -0.5f,  0.5f}, {1.0f, 0.0f, 0.0f}, {0.0f, 0.0f}},
-        {{ 0.5f, -0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}, {1.0f, 0.0f}},
-        {{ 0.5f,  0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}, {1.0f, 1.0f}},
-        {{ 0.5f,  0.5f,  0.5f}, {1.0f, 0.0f, 0.0f}, {0.0f, 1.0f}},
+        {{0.5f, -0.5f, 0.5f}, {1.0f, 0.0f, 0.0f}, {0.0f, 0.0f}},
+        {{0.5f, -0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}, {1.0f, 0.0f}},
+        {{0.5f, 0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}, {1.0f, 1.0f}},
+        {{0.5f, 0.5f, 0.5f}, {1.0f, 0.0f, 0.0f}, {0.0f, 1.0f}},
 
         // Top face (y = 0.5)
-        {{-0.5f,  0.5f,  0.5f}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}},
-        {{ 0.5f,  0.5f,  0.5f}, {0.0f, 1.0f, 0.0f}, {1.0f, 0.0f}},
-        {{ 0.5f,  0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}, {1.0f, 1.0f}},
-        {{-0.5f,  0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}, {0.0f, 1.0f}},
+        {{-0.5f, 0.5f, 0.5f}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}},
+        {{0.5f, 0.5f, 0.5f}, {0.0f, 1.0f, 0.0f}, {1.0f, 0.0f}},
+        {{0.5f, 0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}, {1.0f, 1.0f}},
+        {{-0.5f, 0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}, {0.0f, 1.0f}},
 
         // Bottom face (y = -0.5)
-        {{-0.5f, -0.5f, -0.5f}, {0.0f,-1.0f, 0.0f}, {0.0f, 0.0f}},
-        {{ 0.5f, -0.5f, -0.5f}, {0.0f,-1.0f, 0.0f}, {1.0f, 0.0f}},
-        {{ 0.5f, -0.5f,  0.5f}, {0.0f,-1.0f, 0.0f}, {1.0f, 1.0f}},
-        {{-0.5f, -0.5f,  0.5f}, {0.0f,-1.0f, 0.0f}, {0.0f, 1.0f}}
-    };
+        {{-0.5f, -0.5f, -0.5f}, {0.0f, -1.0f, 0.0f}, {0.0f, 0.0f}},
+        {{0.5f, -0.5f, -0.5f}, {0.0f, -1.0f, 0.0f}, {1.0f, 0.0f}},
+        {{0.5f, -0.5f, 0.5f}, {0.0f, -1.0f, 0.0f}, {1.0f, 1.0f}},
+        {{-0.5f, -0.5f, 0.5f}, {0.0f, -1.0f, 0.0f}, {0.0f, 1.0f}}};
     std::vector<unsigned int> indices = {
         0, 1, 2, 2, 3, 0,       // Front
         4, 5, 6, 6, 7, 4,       // Back
-        8, 9,10,10,11, 8,       // Left
-       12,13,14,14,15,12,       // Right
-       16,17,18,18,19,16,       // Top
-       20,21,22,22,23,20        // Bottom
+        8, 9, 10, 10, 11, 8,    // Left
+        12, 13, 14, 14, 15, 12, // Right
+        16, 17, 18, 18, 19, 16, // Top
+        20, 21, 22, 22, 23, 20  // Bottom
     };
     std::shared_ptr<Mesh> mesh = std::make_shared<Mesh>(vertices, indices);
 
     auto cube = m_scene->createGameObject();
     cube->addComponent<Transform>();
     cube->addComponent<MeshRenderer>(mesh, material);
-    cube->addComponent<RotationComponent>(25.0f);
-    // cube->addComponent<TranslateComponent>(1.0f);
 
-    auto player = m_scene->createGameObject();
+    auto player = m_scene->createGameObject("Player");
     auto playerTransform = player->addComponent<Transform>(glm::vec3(0.0f, 0.0f, 2.0f));
-    playerTransform->setRotation(glm::vec3(0.0f, -90.0f, 0.0f));
+    // playerTransform->setLocalRotationEuler(glm::vec3(0.0f, -90.0f, 0.0f));
     auto camera = player->addComponent<Camera>();
     player->addComponent<PlayerController>(5.0f, 0.1f);
-    player->addComponent<Spotlight>(glm::vec3(1.0f), 1.0f, 1.0f, 0.14f, 0.07f, glm::cos(glm::radians(12.5f)), glm::cos(glm::radians(17.5f)));
+    // player->addComponent<Spotlight>(glm::vec3(1.0f), 1.0f, 1.0f, 0.14f, 0.07f, glm::cos(glm::radians(12.5f)), glm::cos(glm::radians(17.5f)));
     m_scene->setMainCamera(camera);
 
     auto sun = m_scene->createGameObject();
     auto lightTransform = sun->addComponent<Transform>(glm::vec3(0.0f, 5.0f, 0.0f));
-    lightTransform->setRotation(glm::vec3(-90.0f, 0.0f, 0.0f));
-    //sun->addComponent<DirectionalLight>(glm::vec3(1.0f), 1.0f);
+    lightTransform->setLocalRotationEuler(glm::vec3(-90.0f, 0.0f, 0.0f));
+    sun->addComponent<DirectionalLight>(glm::vec3(1.0f), 1.0f);
 
     auto pointLight = m_scene->createGameObject();
     auto pointLightTransform = pointLight->addComponent<Transform>(glm::vec3(2.0f, 1.0f, 0.0f));
-    pointLightTransform->setScale(glm::vec3(0.2f));
+    pointLightTransform->setLocalScale(glm::vec3(0.2f));
     pointLight->addComponent<PointLight>(glm::vec3(1.0f, 1.0f, 1.0f), 1.0f, 1.0f, 0.14f, 0.07f);
     pointLight->addComponent<MeshRenderer>(mesh, material);
 
+    auto backpack = m_scene->instantiateModel(
+        AssetManager::loadModel("backpack", "assets/models/backpack/backpack.obj")
+    );
+    auto backpackTransform = backpack->getComponent<Transform>();
+    backpackTransform->setLocalPosition(glm::vec3(-5.0f, 0.0f, 0.0f));
+
     m_scene->start();
+}
+
+Application::~Application()
+{
+    m_scene.reset();
+    AssetManager::clear();
 }
 
 void Application::run()

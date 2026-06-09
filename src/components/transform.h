@@ -1,9 +1,12 @@
 #pragma once
 
 #include <glm/glm.hpp>
+#include <glm/gtc/quaternion.hpp>
+#include <glm/gtx/quaternion.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
 #include "component.h"
+#include "scenering/gameobject.h"
 
 class Transform : public Component
 {
@@ -16,28 +19,35 @@ public:
     );
     ~Transform() = default;
 
-    inline glm::vec3 getPosition() { return m_position; }
-    inline void setPosition(const glm::vec3& pos) { m_position = pos; }
+    inline glm::vec3 getLocalPosition() const { return m_localPosition; }
+    inline void setLocalPosition(const glm::vec3& pos) { m_localPosition = pos; }
 
-    inline glm::vec3 getRotation() { return m_rotation; }
-    inline void setRotation(const glm::vec3& rot) { m_rotation = rot; }
+    inline glm::quat getLocalRotationQuat() const { return m_localRotation; }
+    inline void setLocalRotationQuat(const glm::quat& rot) { m_localRotation = rot; }
 
-    inline glm::vec3 getScale() { return m_scale; }
-    inline void setScale(const glm::vec3& s) { m_scale = s; }
+    inline glm::vec3 getLocalRotationEuler() const { return glm::degrees(glm::eulerAngles(m_localRotation)); }
+    inline void setLocalRotationEuler(const glm::vec3& rot) { m_localRotation = glm::quat(glm::radians(rot)); }
 
-    inline void translate(const glm::vec3& delta) { m_position += delta; }
-    inline void rotate(const glm::vec3& delta) { m_rotation += delta; }
-    inline void scale(const glm::vec3& delta) { m_scale += delta; }
+    inline glm::vec3 getLocalScale() const { return m_localScale; }
+    inline void setLocalScale(const glm::vec3& s) { m_localScale = s; }
+
+    glm::vec3 getWorldPosition() const;
+    glm::quat getWorldRotation() const;
+    glm::vec3 getWorldScale() const;
+
+    inline void translate(const glm::vec3& delta) { m_localPosition += delta; }
+    void rotateEuler(const glm::vec3& euler);
+    inline void scaleBy(const glm::vec3& factor) { m_localScale *= factor; }
 
     glm::vec3 getForward() const;
     glm::vec3 getRight() const;
     glm::vec3 getUp() const;
 
-    glm::mat4 getModelMatrix() const;
-    glm::mat4 getViewMatrix() const;
+    glm::mat4 getLocalMatrix() const;
+    glm::mat4 getWorldMatrix() const;
 
 private:
-    glm::vec3 m_position;
-    glm::vec3 m_rotation;
-    glm::vec3 m_scale;
+    glm::vec3 m_localPosition;
+    glm::quat m_localRotation;
+    glm::vec3 m_localScale;
 };

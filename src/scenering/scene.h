@@ -5,6 +5,9 @@
 
 #include "gameobject.h"
 #include "components/camera.h"
+#include "rendering/model.h"
+#include "components/meshrenderer.h"
+#include "components/transform.h"
 
 class Scene
 {
@@ -12,7 +15,7 @@ public:
     Scene() = default;
     ~Scene() = default;
 
-    GameObject* createGameObject();
+    GameObject* createGameObject(const std::string& name = "GameObject");
 
     template <typename T>
     std::vector<T*> getComponents() const;
@@ -22,6 +25,13 @@ public:
 
     inline Camera* getMainCamera() const { return m_mainCamera; }
     inline void setMainCamera(Camera* camera) { m_mainCamera = camera; }
+
+    GameObject* instantiateModel(const std::shared_ptr<Model>& model);
+
+    GameObject* getGameObjectByName(const std::string& name) const;
+
+private:
+    GameObject* instantiateModelNode(const ModelNode& node, const std::shared_ptr<Model>& model, GameObject* parent);
 
 private:
     std::vector<std::unique_ptr<GameObject>> m_gameObjects;

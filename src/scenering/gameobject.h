@@ -2,13 +2,18 @@
 
 #include <vector>
 #include <memory>
+#include <stdexcept>
+#include <algorithm>
+#include <string>
 
 #include "components/component.h"
+
+class Scene;
 
 class GameObject
 {
 public:
-    GameObject() = default;
+    GameObject(Scene& scene) : m_scene(scene) {}
     ~GameObject() = default;
 
     template <typename T, typename... Args>
@@ -20,8 +25,20 @@ public:
     void start();
     void update(float deltaTime);
 
+    std::string getName() const { return m_name; }
+    void setName(const std::string& name) { m_name = name; }
+
+    void setParent(GameObject* parent);
+    bool isChildOf(const GameObject* potentialParent) const;
+    inline GameObject* getParent() const { return m_parent; }
+    inline const std::vector<GameObject*>& getChildren() const { return m_children; }
+
 private:
+    std::string m_name;
     std::vector<std::unique_ptr<Component>> m_components;
+    Scene& m_scene;
+    GameObject* m_parent = nullptr;
+    std::vector<GameObject*> m_children;
 };
 
 template <typename T, typename... Args>

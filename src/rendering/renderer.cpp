@@ -82,7 +82,7 @@ void Renderer::draw(const Transform &transform, const Mesh &mesh, const Material
     }
 
     shader->setMat4("u_ViewProjection", m_sceneData.viewProjectionMatrix);
-    shader->setMat4("u_Model", transform.getModelMatrix());
+    shader->setMat4("u_Model", transform.getWorldMatrix());
 
     mesh.bind();
     glDrawElements(GL_TRIANGLES, mesh.getIndexBuffer().getCount(), GL_UNSIGNED_INT, nullptr);

@@ -8,18 +8,17 @@
 #include "input.h"
 #include "systems/rendersystem.h"
 #include "scenering/scene.h"
-#include "components/rotationcomponent.h"
-#include "components/translatecomponent.h"
 #include "components/directionallight.h"
 #include "components/pointlight.h"
 #include "components/spotlight.h"
 #include "components/playercontroller.h"
+#include "resources/assetmanager.h"
 
 class Application
 {
 public:
     Application();
-    ~Application() = default;
+    ~Application();
 
     void run();
 

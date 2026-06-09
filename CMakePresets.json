@@ -1,5 +1,5 @@
 {
-    "version": 5,
+    "version": 3,
     "cmakeMinimumRequired": {
         "major": 3,
         "minor": 20,
@@ -11,7 +11,7 @@
             "displayName": "Windows Cross Compile (MinGW)",
             "description": "Configure MyGame for Windows using the MinGW cross toolchain.",
             "generator": "Unix Makefiles",
-            "binaryDir": "${sourceDir}/build-windows-preset",
+            "binaryDir": "${sourceDir}/out/build/${presetName}",
             "toolchainFile": "${sourceDir}/mingw-toolchain.cmake",
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Release",

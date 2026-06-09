@@ -4,6 +4,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 #include "component.h"
+#include "transform.h"
 
 class Camera : public Component
 {
@@ -22,6 +23,14 @@ public:
     inline void setFarPlane(float farPlane) { m_farPlane = farPlane; }
 
     inline glm::mat4 getProjectionMatrix(float aspectRatio) const { return glm::perspective(glm::radians(m_fov), aspectRatio, m_nearPlane, m_farPlane); }
+    inline glm::mat4 getViewMatrix() const
+    {
+        auto transform = getGameObject()->getComponent<Transform>();
+        if (!transform)
+            throw std::runtime_error("Camera has no transform component.");
+
+        return glm::lookAt(transform->getWorldPosition(), transform->getWorldPosition() + transform->getForward(), transform->getUp());
+    }
 
 private:
     float m_fov;

@@ -8,13 +8,13 @@ void RenderSystem::render(Scene &scene, Renderer &renderer)
         throw std::runtime_error("No main camera set in the scene.");
     }
 
-    auto cameraTransform = mainCamera->getOwner()->getComponent<Transform>();
+    auto cameraTransform = mainCamera->getGameObject()->getComponent<Transform>();
     if (!cameraTransform)
         throw std::runtime_error("Main camera has no transform component.");
 
     SceneData sceneData{
-        .viewProjectionMatrix = mainCamera->getProjectionMatrix(renderer.getAspectRatio()) * cameraTransform->getViewMatrix(),
-        .cameraPosition = cameraTransform->getPosition(),
+        .viewProjectionMatrix = mainCamera->getProjectionMatrix(renderer.getAspectRatio()) * mainCamera->getViewMatrix(),
+        .cameraPosition = cameraTransform->getWorldPosition(),
         .directionalLight = {
             .direction = glm::vec3(0.0f, -1.0f, 0.0f),
             .color = glm::vec3(1.0f),
@@ -25,7 +25,7 @@ void RenderSystem::render(Scene &scene, Renderer &renderer)
     auto directionalLight = scene.getComponents<DirectionalLight>();
     if (!directionalLight.empty())
     {
-        auto directionalLightTransform = directionalLight[0]->getOwner()->getComponent<Transform>();
+        auto directionalLightTransform = directionalLight[0]->getGameObject()->getComponent<Transform>();
         if (!directionalLightTransform)
             throw std::runtime_error("Directional light has no transform component.");
 
@@ -37,12 +37,12 @@ void RenderSystem::render(Scene &scene, Renderer &renderer)
     auto pointLights = scene.getComponents<PointLight>();
     for (PointLight *pointLight : pointLights)
     {
-        auto pointLightTransform = pointLight->getOwner()->getComponent<Transform>();
+        auto pointLightTransform = pointLight->getGameObject()->getComponent<Transform>();
         if (!pointLightTransform)
             throw std::runtime_error("Point light has no transform component.");
 
         PointLightData pointLightData{
-            .position = pointLightTransform->getPosition(),
+            .position = pointLightTransform->getWorldPosition(),
             .color = pointLight->getColor(),
             .intensity = pointLight->getIntensity(),
             .constant = pointLight->getConstant(),
@@ -55,12 +55,12 @@ void RenderSystem::render(Scene &scene, Renderer &renderer)
     auto spotLights = scene.getComponents<Spotlight>();
     for (Spotlight *spotLight : spotLights)
     {
-        auto spotLightTransform = spotLight->getOwner()->getComponent<Transform>();
+        auto spotLightTransform = spotLight->getGameObject()->getComponent<Transform>();
         if (!spotLightTransform)
             throw std::runtime_error("Spot light has no transform component.");
 
         SpotLightData spotLightData{
-            .position = spotLightTransform->getPosition(),
+            .position = spotLightTransform->getWorldPosition(),
             .direction = spotLightTransform->getForward(),
             .color = spotLight->getColor(),
             .intensity = spotLight->getIntensity(),
@@ -78,7 +78,7 @@ void RenderSystem::render(Scene &scene, Renderer &renderer)
     auto meshRenderers = scene.getComponents<MeshRenderer>();
     for (MeshRenderer *meshRenderer : meshRenderers)
     {
-        auto *transform = meshRenderer->getOwner()->getComponent<Transform>();
+        auto *transform = meshRenderer->getGameObject()->getComponent<Transform>();
         renderer.draw(*transform, *meshRenderer->getMesh(), *meshRenderer->getMaterial());
     }
 
