@@ -21,6 +21,20 @@ struct PointLightData
     float quadratic;
 };
 
+struct SpotLightData
+{
+    glm::vec3 position;
+    glm::vec3 direction;
+    glm::vec3 color;
+    float intensity;
+
+    float constant;
+    float linear;
+    float quadratic;
+    float innerCutoff;
+    float outerCutoff;
+};
+
 struct SceneData
 {
     glm::mat4 viewProjectionMatrix;
@@ -29,4 +43,5 @@ struct SceneData
     
     DirectionalLightData directionalLight;
     std::vector<PointLightData> pointLights;
+    std::vector<SpotLightData> spotLights;
 };

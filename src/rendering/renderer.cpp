@@ -66,6 +66,21 @@ void Renderer::draw(const Transform &transform, const Mesh &mesh, const Material
         shader->setFloat("u_PointLights[" + std::to_string(i) + "].quadratic", pointLight.quadratic);
     }
 
+    shader->setInt("u_NumSpotLights", std::min(static_cast<int>(m_sceneData.spotLights.size()), MAX_SPOT_LIGHTS));
+    for(size_t i = 0; i < m_sceneData.spotLights.size() && i < MAX_SPOT_LIGHTS; ++i)
+    {
+        const auto& spotLight = m_sceneData.spotLights[i];
+        shader->setVec3("u_SpotLights[" + std::to_string(i) + "].position", spotLight.position);
+        shader->setVec3("u_SpotLights[" + std::to_string(i) + "].direction", spotLight.direction);
+        shader->setVec3("u_SpotLights[" + std::to_string(i) + "].color", spotLight.color);
+        shader->setFloat("u_SpotLights[" + std::to_string(i) + "].intensity", spotLight.intensity);
+        shader->setFloat("u_SpotLights[" + std::to_string(i) + "].constant", spotLight.constant);
+        shader->setFloat("u_SpotLights[" + std::to_string(i) + "].linear", spotLight.linear);
+        shader->setFloat("u_SpotLights[" + std::to_string(i) + "].quadratic", spotLight.quadratic);
+        shader->setFloat("u_SpotLights[" + std::to_string(i) + "].innerCutoff", spotLight.innerCutoff);
+        shader->setFloat("u_SpotLights[" + std::to_string(i) + "].outerCutoff", spotLight.outerCutoff);
+    }
+
     shader->setMat4("u_ViewProjection", m_sceneData.viewProjectionMatrix);
     shader->setMat4("u_Model", transform.getModelMatrix());
 

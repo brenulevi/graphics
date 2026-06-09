@@ -9,6 +9,7 @@
 #include "components/transform.h"
 #include "components/directionallight.h"
 #include "components/pointlight.h"
+#include "components/spotlight.h"
 
 class RenderSystem
 {

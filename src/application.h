@@ -12,6 +12,7 @@
 #include "components/translatecomponent.h"
 #include "components/directionallight.h"
 #include "components/pointlight.h"
+#include "components/spotlight.h"
 #include "components/playercontroller.h"
 
 class Application

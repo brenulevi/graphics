@@ -14,8 +14,8 @@ Application::Application()
     m_scene = std::make_unique<Scene>();
 
     std::shared_ptr<Shader> shader = std::make_shared<Shader>("assets/shaders/basic.vert", "assets/shaders/basic.frag");
-    std::shared_ptr<Texture> diffuse = std::make_shared<Texture>("assets/textures/foto.png");
-    std::shared_ptr<Texture> specular = std::make_shared<Texture>("assets/textures/specular.png");
+    std::shared_ptr<Texture> diffuse = std::make_shared<Texture>("assets/textures/container.png");
+    std::shared_ptr<Texture> specular = std::make_shared<Texture>("assets/textures/container_specular.png");
     std::shared_ptr<Material> material = std::make_shared<Material>(shader, diffuse, specular, 32.0f);
 
     std::vector<Vertex> vertices = {
@@ -76,12 +76,13 @@ Application::Application()
     playerTransform->setRotation(glm::vec3(0.0f, -90.0f, 0.0f));
     auto camera = player->addComponent<Camera>();
     player->addComponent<PlayerController>(5.0f, 0.1f);
+    player->addComponent<Spotlight>(glm::vec3(1.0f), 1.0f, 1.0f, 0.14f, 0.07f, glm::cos(glm::radians(12.5f)), glm::cos(glm::radians(17.5f)));
     m_scene->setMainCamera(camera);
 
     auto sun = m_scene->createGameObject();
     auto lightTransform = sun->addComponent<Transform>(glm::vec3(0.0f, 5.0f, 0.0f));
     lightTransform->setRotation(glm::vec3(-90.0f, 0.0f, 0.0f));
-    sun->addComponent<DirectionalLight>(glm::vec3(1.0f), 1.0f);
+    //sun->addComponent<DirectionalLight>(glm::vec3(1.0f), 1.0f);
 
     auto pointLight = m_scene->createGameObject();
     auto pointLightTransform = pointLight->addComponent<Transform>(glm::vec3(2.0f, 1.0f, 0.0f));

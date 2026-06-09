@@ -51,7 +51,7 @@ private:
 template <typename T>
 inline void BufferLayout::push(unsigned int count)
 {
-    static_assert(false, "Unsupported type!");
+    throw std::runtime_error("Unsupported type!");
 }
 
 template <>

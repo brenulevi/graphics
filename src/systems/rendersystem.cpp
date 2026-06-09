@@ -52,6 +52,27 @@ void RenderSystem::render(Scene &scene, Renderer &renderer)
         sceneData.pointLights.push_back(pointLightData);
     }
 
+    auto spotLights = scene.getComponents<Spotlight>();
+    for (Spotlight *spotLight : spotLights)
+    {
+        auto spotLightTransform = spotLight->getOwner()->getComponent<Transform>();
+        if (!spotLightTransform)
+            throw std::runtime_error("Spot light has no transform component.");
+
+        SpotLightData spotLightData{
+            .position = spotLightTransform->getPosition(),
+            .direction = spotLightTransform->getForward(),
+            .color = spotLight->getColor(),
+            .intensity = spotLight->getIntensity(),
+            .constant = spotLight->getConstant(),
+            .linear = spotLight->getLinear(),
+            .quadratic = spotLight->getQuadratic(),
+            .innerCutoff = spotLight->getInnerCutoff(),
+            .outerCutoff = spotLight->getOuterCutoff()
+        };
+        sceneData.spotLights.push_back(spotLightData);
+    }
+
     renderer.beginScene(sceneData);
 
     auto meshRenderers = scene.getComponents<MeshRenderer>();

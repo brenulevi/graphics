@@ -73,6 +73,7 @@ add_executable(MyGame
     src/components/pointlight.h
     src/components/playercontroller.h
     src/components/playercontroller.cpp
+    src/components/spotlight.h
 )
 
 target_include_directories(MyGame PRIVATE
