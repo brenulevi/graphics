@@ -77,7 +77,7 @@ Application::Application()
     // playerTransform->setLocalRotationEuler(glm::vec3(0.0f, -90.0f, 0.0f));
     auto camera = player->addComponent<Camera>();
     player->addComponent<PlayerController>(5.0f, 0.1f);
-    // player->addComponent<Spotlight>(glm::vec3(1.0f), 1.0f, 1.0f, 0.14f, 0.07f, glm::cos(glm::radians(12.5f)), glm::cos(glm::radians(17.5f)));
+    player->addComponent<Spotlight>(glm::vec3(1.0f), 1.0f, 1.0f, 0.14f, 0.07f, glm::cos(glm::radians(12.5f)), glm::cos(glm::radians(17.5f)));
     m_scene->setMainCamera(camera);
 
     auto sun = m_scene->createGameObject();

@@ -13,19 +13,6 @@ void AssetManager::clear()
     s_meshes.clear();
 }
 
-std::shared_ptr<Mesh> AssetManager::loadMesh(const std::string &name, const std::string &filepath)
-{
-    auto it = s_meshes.find(name);
-    if (it != s_meshes.end())
-    {
-        return it->second;
-    }
-
-    auto mesh = MeshLoader::loadFromFile(filepath);
-    s_meshes[name] = mesh;
-    return mesh;
-}
-
 std::shared_ptr<Mesh> AssetManager::createMesh(const std::string &name, const std::vector<Vertex> &vertices, const std::vector<unsigned int> &indices)
 {
     auto it = s_meshes.find(name);

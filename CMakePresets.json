@@ -21,6 +21,19 @@
             }
         },
         {
+            "name": "windows",
+            "displayName": "Windows Native (MSVC)",
+            "description": "Configure MyGame for Windows using MSVC cl compiler.",
+            "generator": "NMake Makefiles",
+            "binaryDir": "${sourceDir}/out/build/${presetName}",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Release",
+                "GLFW_BUILD_DOCS": "OFF",
+                "GLFW_BUILD_EXAMPLES": "OFF",
+                "GLFW_BUILD_TESTS": "OFF"
+            }
+        },
+        {
             "name": "linux",
             "displayName": "GCC 12.3.0 x86_64-linux-gnu",
             "description": "Using compilers: C = /usr/bin/gcc, CXX = /usr/bin/g++",
@@ -37,6 +50,10 @@
         {
             "name": "windows-cross",
             "configurePreset": "windows-cross"
+        },
+        {
+            "name": "windows",
+            "configurePreset": "windows"
         }
     ]
 }

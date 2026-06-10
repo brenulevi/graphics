@@ -4,7 +4,3 @@ std::shared_ptr<Mesh> MeshLoader::createMesh(const std::vector<Vertex> &vertices
 {
     return std::make_shared<Mesh>(vertices, indices);
 }
-
-std::shared_ptr<Mesh> MeshLoader::loadFromFile(const std::string &filepath)
-{
-}

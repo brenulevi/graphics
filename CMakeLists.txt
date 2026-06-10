@@ -2,39 +2,39 @@ cmake_minimum_required(VERSION 3.10)
 
 project(MyGame)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # --------------------------------------------------
-# GLOBAL: NÃO transformar warnings em errors (externals quebram fácil)
+# Warnings
 # --------------------------------------------------
 set(CMAKE_COMPILE_WARNING_AS_ERROR OFF)
-add_compile_options(-Wno-error)
+
+if(NOT MSVC)
+    add_compile_options(-Wno-error)
+    add_compile_options(-Wno-error=unused-parameter)
+    add_compile_options(-Wno-error=maybe-uninitialized)
+endif()
 
 # --------------------------------------------------
-# GLFW options (DEVEM vir antes do add_subdirectory)
+# GLFW options
 # --------------------------------------------------
 set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 
 # --------------------------------------------------
-# Disable strict warnings BEFORE external libs
+# Assimp options
 # --------------------------------------------------
-set(CMAKE_COMPILE_WARNING_AS_ERROR OFF)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-error -Wno-error=maybe-uninitialized")
-
-# IMPORTANT: prevent Assimp enabling Werror internally
 set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
 set(ASSIMP_WARNINGS_AS_ERRORS OFF CACHE BOOL "" FORCE)
 set(ASSIMP_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(ASSIMP_INSTALL OFF CACHE BOOL "" FORCE)
 
-add_subdirectory(external/assimp)
-
 # --------------------------------------------------
 # External libs
 # --------------------------------------------------
+add_subdirectory(external/assimp)
 add_subdirectory(external/glfw)
 add_subdirectory(external/glad/cmake)
 add_subdirectory(external/glm)
@@ -42,19 +42,18 @@ add_subdirectory(external/glm)
 glad_add_library(glad STATIC API gl:core=3.3)
 
 # --------------------------------------------------
-# OpenGL (cross compile safe)
+# OpenGL
 # --------------------------------------------------
 find_package(OpenGL REQUIRED)
 
-# fallback mais seguro para MinGW cross
-if (CMAKE_CROSSCOMPILING AND WIN32)
+if(CMAKE_CROSSCOMPILING AND WIN32)
     set(OPENGL_LIB opengl32)
 else()
     set(OPENGL_LIB OpenGL::GL)
 endif()
 
 # --------------------------------------------------
-# Executável
+# Executable
 # --------------------------------------------------
 add_executable(MyGame
     src/main.cpp
@@ -138,25 +137,31 @@ target_compile_definitions(MyGame PRIVATE
 )
 
 # --------------------------------------------------
-# Linking (cross-safe)
+# MSVC specific settings
+# --------------------------------------------------
+if(MSVC)
+    target_compile_options(MyGame PRIVATE /W3)
+endif()
+
+# --------------------------------------------------
+# Link libraries
 # --------------------------------------------------
 target_link_libraries(MyGame PRIVATE
     glfw
     glad
-    glm
     assimp
     ${OPENGL_LIB}
 )
 
 # --------------------------------------------------
-# Assimp safety: remove Werror localmente (extra segurança)
+# Assimp
 # --------------------------------------------------
 set_target_properties(assimp PROPERTIES
     COMPILE_WARNING_AS_ERROR OFF
 )
 
 # --------------------------------------------------
-# Assets copy
+# Assets
 # --------------------------------------------------
 add_custom_command(TARGET MyGame POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory
