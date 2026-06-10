@@ -35,7 +35,7 @@
         },
         {
             "name": "linux",
-            "displayName": "GCC 12.3.0 x86_64-linux-gnu",
+            "displayName": "Linux (GCC)",
             "description": "Using compilers: C = /usr/bin/gcc, CXX = /usr/bin/g++",
             "binaryDir": "${sourceDir}/out/build/${presetName}",
             "cacheVariables": {
@@ -49,11 +49,18 @@
     "buildPresets": [
         {
             "name": "windows-cross",
-            "configurePreset": "windows-cross"
+            "configurePreset": "windows-cross",
+            "jobs": 12
         },
         {
             "name": "windows",
-            "configurePreset": "windows"
+            "configurePreset": "windows",
+            "jobs": 12
+        },
+        {
+            "name": "linux",
+            "configurePreset": "linux",
+            "jobs": 12
         }
     ]
 }
