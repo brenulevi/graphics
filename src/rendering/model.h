@@ -33,4 +33,5 @@ public:
     ModelNode rootNode;
 
     std::vector<ModelMesh> meshes;
+    std::vector<std::shared_ptr<Material>> materials;
 };

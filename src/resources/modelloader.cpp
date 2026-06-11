@@ -20,11 +20,20 @@ std::shared_ptr<Model> ModelLoader::loadFromFile(const std::string &filepath)
     std::string directory = filepath.substr(0, filepath.find_last_of('/'));
 
     auto model = std::make_shared<Model>();
-    model->rootNode = processNode(scene->mRootNode, scene, *model, directory);
+
+    model->materials.reserve(scene->mNumMaterials);
+    for(unsigned int i = 0; i < scene->mNumMaterials; i++)
+    {
+        aiMaterial* material = scene->mMaterials[i];
+        model->materials.push_back(processMaterial(material, directory));
+    }
+
+    model->rootNode = processNode(scene->mRootNode, scene, *model);
+
     return model;
 }
 
-ModelNode ModelLoader::processNode(const aiNode *node, const aiScene *scene, Model &model, std::string& directory)
+ModelNode ModelLoader::processNode(const aiNode *node, const aiScene *scene, Model &model)
 {
     ModelNode modelNode;
 
@@ -44,7 +53,7 @@ ModelNode ModelLoader::processNode(const aiNode *node, const aiScene *scene, Mod
     {
         aiMesh* assimpMesh = scene->mMeshes[node->mMeshes[i]];
 
-        ModelMesh modelMesh = processMesh(assimpMesh, scene, directory);
+        ModelMesh modelMesh = processMesh(assimpMesh, model);
 
         unsigned int meshIndex = model.meshes.size();
         model.meshes.push_back(modelMesh);
@@ -56,14 +65,14 @@ ModelNode ModelLoader::processNode(const aiNode *node, const aiScene *scene, Mod
     for (unsigned int i = 0; i < node->mNumChildren; i++)
     {
         modelNode.children.push_back(
-            std::make_unique<ModelNode>(processNode(node->mChildren[i], scene, model, directory))
+            std::make_unique<ModelNode>(processNode(node->mChildren[i], scene, model))
         );
     }
 
     return modelNode;
 }
 
-ModelMesh ModelLoader::processMesh(const aiMesh *mesh, const aiScene *scene, std::string& directory)
+ModelMesh ModelLoader::processMesh(const aiMesh *mesh, Model &model)
 {
     std::vector<Vertex> vertices;
     std::vector<unsigned int> indices;
@@ -81,7 +90,7 @@ ModelMesh ModelLoader::processMesh(const aiMesh *mesh, const aiScene *scene, std
             mesh->mVertices[i].z
         };
 
-        if (mesh->mNormals)
+        if (mesh->HasNormals())
         {
             vertex.normal =
             {
@@ -123,12 +132,7 @@ ModelMesh ModelLoader::processMesh(const aiMesh *mesh, const aiScene *scene, std
 
     ModelMesh modelMesh;
     modelMesh.mesh = std::make_shared<Mesh>(vertices, indices);
-
-    // Process material
-    unsigned int materialIndex = mesh->mMaterialIndex;
-    aiMaterial* material = scene->mMaterials[materialIndex];
-
-    modelMesh.material = processMaterial(material, directory);
+    modelMesh.material = model.materials[mesh->mMaterialIndex];
 
     return modelMesh;
 }
