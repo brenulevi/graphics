@@ -8,7 +8,8 @@
 #include "components/transform.h"
 #include "rendering/mesh.h"
 #include "rendering/material.h"
-#include "scenering/scenedata.h"
+#include "data/scenedata.h"
+#include "data/shadowpassdata.h"
 
 #define MAX_POINT_LIGHTS 4
 #define MAX_SPOT_LIGHTS 4
@@ -24,6 +25,10 @@ public:
     void beginScene(const SceneData& sceneData);
     void draw(const Transform& transform, const Mesh& mesh, const Material& material);
     void endScene();
+    
+    void beginShadowPass(const ShadowPassData& shadowPassData);
+    void drawShadow(const Transform& transform, const Mesh& mesh);
+    void endShadowPass();
 
     void setViewportSize(float width, float height);
 
@@ -32,4 +37,5 @@ public:
 private:
     glm::vec2 m_viewportSize;
     SceneData m_sceneData;
+    ShadowPassData m_shadowPassData;
 };

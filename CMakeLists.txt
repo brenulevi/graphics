@@ -94,11 +94,16 @@ add_executable(MyGame
     src/rendering/texture.h
     src/rendering/texture.cpp
     src/rendering/model.h
+    src/rendering/framebuffer.h
+    src/rendering/framebuffer.cpp
 
     src/scenering/scene.h
     src/scenering/scene.cpp
     src/scenering/gameobject.h
     src/scenering/gameobject.cpp
+
+    src/data/scenedata.h
+    src/data/shadowpassdata.h
 
     src/systems/rendersystem.h
     src/systems/rendersystem.cpp
