@@ -39,6 +39,19 @@ std::shared_ptr<Texture> AssetManager::loadTexture(const std::string &name, cons
     return texture;
 }
 
+std::shared_ptr<Texture> AssetManager::createTexture(const std::string &name, int width, int height, TextureFormat format)
+{
+    auto it = s_textures.find(name);
+    if (it != s_textures.end())
+    {
+        return it->second;
+    }
+
+    auto texture = std::make_shared<Texture>(width, height, format);
+    s_textures[name] = texture;
+    return texture;
+}
+
 std::shared_ptr<Shader> AssetManager::loadShader(const std::string &name, const std::string &vertexPath, const std::string &fragmentPath)
 {
     auto it = s_shaders.find(name);

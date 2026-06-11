@@ -32,6 +32,20 @@ void Framebuffer::setDepthAttachment(const std::shared_ptr<Texture> &texture)
     }
 }
 
+void Framebuffer::setDepthStencilAttachment(const std::shared_ptr<Texture> &texture)
+{
+    m_depthStencilAttachment = texture;
+
+    bind();
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, texture->getID(), 0);
+
+    if(!m_colorAttachment)
+    {
+        glDrawBuffer(GL_NONE);
+        glReadBuffer(GL_NONE);
+    }
+}
+
 bool Framebuffer::isComplete() const
 {
     bind();

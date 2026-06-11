@@ -1,6 +1,7 @@
 #pragma once
 
 #include <iostream>
+#include <glm/glm.hpp>
 #include <stdexcept>
 
 #include "window.h"
@@ -8,6 +9,9 @@
 #include "input.h"
 #include "systems/rendersystem.h"
 #include "scenering/scene.h"
+#include "components/transform.h"
+#include "components/meshrenderer.h"
+#include "components/camera.h"
 #include "components/directionallight.h"
 #include "components/pointlight.h"
 #include "components/spotlight.h"

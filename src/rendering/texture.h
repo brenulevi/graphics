@@ -10,6 +10,19 @@ enum class TextureFormat
     Depth
 };
 
+enum class TextureWrapMode
+{
+    Repeat,
+    MirroredRepeat,
+    ClampToEdge
+};
+
+enum class TextureFilterMode
+{
+    Nearest,
+    Linear
+};
+
 class Texture
 {
 public:
@@ -23,6 +36,9 @@ public:
     inline int getWidth() const { return m_width; }
     inline int getHeight() const { return m_height; }
     inline int getChannels() const { return m_channels; }
+
+    void setWrapMode(TextureWrapMode wrapModeS, TextureWrapMode wrapModeT);
+    void setFilterMode(TextureFilterMode filterModeMin, TextureFilterMode filterModeMag);
 
 private:
     unsigned char *loadTextureFromFile(const char *path);

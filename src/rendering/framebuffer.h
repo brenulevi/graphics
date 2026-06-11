@@ -17,9 +17,11 @@ public:
 
     void setColorAttachment(const std::shared_ptr<Texture> &texture);
     void setDepthAttachment(const std::shared_ptr<Texture> &texture);
+    void setDepthStencilAttachment(const std::shared_ptr<Texture> &texture);
 
     inline std::shared_ptr<Texture> getColorAttachment() const { return m_colorAttachment; }
     inline std::shared_ptr<Texture> getDepthAttachment() const { return m_depthAttachment; }
+    inline std::shared_ptr<Texture> getDepthStencilAttachment() const { return m_depthStencilAttachment; }
 
     bool isComplete() const;
 
@@ -30,4 +32,5 @@ private:
 
     std::shared_ptr<Texture> m_colorAttachment;
     std::shared_ptr<Texture> m_depthAttachment;
+    std::shared_ptr<Texture> m_depthStencilAttachment;
 };

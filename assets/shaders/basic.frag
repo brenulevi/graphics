@@ -46,6 +46,7 @@ struct SpotLight
 in vec3 v_Normal;
 in vec2 v_TexCoord;
 in vec3 v_FragPos;
+in vec4 v_LightSpacePos;
 
 uniform Material u_Material;
 
@@ -57,11 +58,45 @@ uniform int u_NumSpotLights;
 
 uniform vec3 u_ViewPos;
 
+uniform sampler2D u_ShadowMap;
+
 out vec4 o_FragColor;
 
 vec3 calcDirectionalLight(DirectionalLight light, vec3 normal, vec3 viewDir, vec3 diffuseTex, vec3 specularTex);
 vec3 calcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir, vec3 diffuseTex, vec3 specularTex);
 vec3 calcSpotLight(SpotLight light, vec3 normal, vec3 fragPos, vec3 viewDir, vec3 diffuseTex, vec3 specularTex);
+
+float calcShadow(vec4 lightSpacePos, vec3 normal)
+{
+    vec3 projCoords = lightSpacePos.xyz / lightSpacePos.w;
+    projCoords = projCoords * 0.5 + 0.5;
+
+    if (projCoords.x < 0.0 || projCoords.x > 1.0 ||
+        projCoords.y < 0.0 || projCoords.y > 1.0 ||
+        projCoords.z > 1.0)
+    {
+        return 0.0;
+    }
+
+    float currentDepth = projCoords.z;
+
+    vec3 lightDir = normalize(-u_DirectionalLight.direction);
+    float bias = max(0.005 * (1.0 - dot(normal, lightDir)), 0.001);
+
+    float shadow = 0.0;
+    vec2 texelSize = 1.0 / vec2(textureSize(u_ShadowMap, 0));
+    for (int x = -1; x <= 1; ++x)
+    {
+        for (int y = -1; y <= 1; ++y)
+        {
+            float closestDepth = texture(u_ShadowMap, projCoords.xy + vec2(x, y) * texelSize).r;
+            shadow += currentDepth - bias > closestDepth ? 1.0 : 0.0;
+        }
+    }
+    shadow /= 9.0;
+
+    return shadow;
+}
 
 void main()
 {
@@ -76,7 +111,9 @@ void main()
 
     vec3 result = ambient;
 
-    result += calcDirectionalLight(u_DirectionalLight, norm, viewDir, diffuseTex, specularTex);
+    float shadow = calcShadow(v_LightSpacePos, norm);
+    vec3 dirLight = calcDirectionalLight(u_DirectionalLight, norm, viewDir, diffuseTex, specularTex);
+    result += (1.0 - shadow) * dirLight;
 
     for (int i = 0; i < u_NumPointLights; ++i)
     {

@@ -21,6 +21,7 @@ public:
     
     static std::shared_ptr<Mesh> createMesh(const std::string& name, const std::vector<Vertex>& vertices, const std::vector<unsigned int>& indices);
     static std::shared_ptr<Texture> loadTexture(const std::string& name, const std::string& filepath);
+    static std::shared_ptr<Texture> createTexture(const std::string& name, int width, int height, TextureFormat format);
     static std::shared_ptr<Shader> loadShader(const std::string& name, const std::string& vertexPath, const std::string& fragmentPath);
     static std::shared_ptr<Model> loadModel(const std::string& name, const std::string& filepath);
 

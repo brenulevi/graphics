@@ -1,6 +1,9 @@
 #include "rendersystem.h"
 
-void RenderSystem::render(Scene &scene, Renderer &renderer)
+void RenderSystem::render(
+    Scene &scene,
+    float shadowDistance,
+    Renderer &renderer)
 {
     Camera *mainCamera = scene.getMainCamera();
     if (!mainCamera)
@@ -22,16 +25,73 @@ void RenderSystem::render(Scene &scene, Renderer &renderer)
         }
     };
 
+    auto meshRenderers = scene.getComponents<MeshRenderer>();
+
     auto directionalLight = scene.getComponents<DirectionalLight>();
     if (!directionalLight.empty())
     {
-        auto directionalLightTransform = directionalLight[0]->getGameObject()->getComponent<Transform>();
-        if (!directionalLightTransform)
-            throw std::runtime_error("Directional light has no transform component.");
+        auto light = directionalLight[0];
+        auto lightTransform = light->getGameObject()->getComponent<Transform>();
+        auto lightDirection = lightTransform->getForward();
 
-        sceneData.directionalLight.direction = directionalLightTransform->getForward();
-        sceneData.directionalLight.color = directionalLight[0]->getColor();
-        sceneData.directionalLight.intensity = directionalLight[0]->getIntensity();
+        sceneData.directionalLight.direction = lightDirection;
+        sceneData.directionalLight.color = light->getColor();
+        sceneData.directionalLight.intensity = light->getIntensity();
+
+        auto& shadowMap = light->getShadowMap();
+        
+        auto cameraPosition = cameraTransform->getWorldPosition();
+        auto cameraForward = cameraTransform->getForward();
+
+        auto center = cameraPosition + cameraForward * shadowDistance * 0.5f;
+        auto lightPos = center - lightDirection * shadowDistance;
+
+        glm::vec3 up = glm::abs(glm::dot(glm::normalize(lightDirection), glm::vec3(0.0f, 1.0f, 0.0f))) > 0.99f
+            ? glm::vec3(0.0f, 0.0f, 1.0f)
+            : glm::vec3(0.0f, 1.0f, 0.0f);
+
+        glm::mat4 lightViewMatrix = glm::lookAt(
+            lightPos,
+            center,
+            up
+        );
+
+        const float shadowMapResolution = static_cast<float>(shadowMap.getWidth());
+        const float texelSize = (shadowDistance * 2.0f) / shadowMapResolution;
+
+        glm::vec3 centerInLightSpace = glm::vec3(lightViewMatrix * glm::vec4(center, 1.0f));
+        centerInLightSpace.x = std::floor(centerInLightSpace.x / texelSize) * texelSize;
+        centerInLightSpace.y = std::floor(centerInLightSpace.y / texelSize) * texelSize;
+
+        glm::vec3 snappedCenter = glm::vec3(glm::inverse(lightViewMatrix) * glm::vec4(centerInLightSpace, 1.0f));
+        glm::vec3 snappedLightPos = snappedCenter - lightDirection * shadowDistance;
+
+        lightViewMatrix = glm::lookAt(
+            snappedLightPos,
+            snappedCenter,
+            up
+        );
+
+        glm::mat4 lightProjectionMatrix = glm::ortho(
+            -shadowDistance,
+            shadowDistance,
+            -shadowDistance,
+            shadowDistance,
+            0.1f,
+            shadowDistance * 4.0f
+        );
+
+        shadowMap.setLightSpaceMatrix(lightProjectionMatrix * lightViewMatrix);
+
+        renderer.beginShadowPass(&shadowMap);
+
+        for (MeshRenderer *meshRenderer : meshRenderers)
+        {
+            auto *transform = meshRenderer->getGameObject()->getComponent<Transform>();
+            renderer.drawShadow(*transform, *meshRenderer->getMesh());
+        }
+
+        renderer.endShadowPass();
     }
 
     auto pointLights = scene.getComponents<PointLight>();
@@ -75,7 +135,6 @@ void RenderSystem::render(Scene &scene, Renderer &renderer)
 
     renderer.beginScene(sceneData);
 
-    auto meshRenderers = scene.getComponents<MeshRenderer>();
     for (MeshRenderer *meshRenderer : meshRenderers)
     {
         auto *transform = meshRenderer->getGameObject()->getComponent<Transform>();

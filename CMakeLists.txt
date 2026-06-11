@@ -4,6 +4,7 @@ project(MyGame)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # --------------------------------------------------
 # Warnings
@@ -96,14 +97,14 @@ add_executable(MyGame
     src/rendering/model.h
     src/rendering/framebuffer.h
     src/rendering/framebuffer.cpp
+    src/rendering/shadowmap.h
+    src/rendering/shadowmap.cpp
 
     src/scenering/scene.h
     src/scenering/scene.cpp
     src/scenering/gameobject.h
     src/scenering/gameobject.cpp
-
-    src/data/scenedata.h
-    src/data/shadowpassdata.h
+    src/scenering/scenedata.h
 
     src/systems/rendersystem.h
     src/systems/rendersystem.cpp

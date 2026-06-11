@@ -1,6 +1,7 @@
 #pragma once
 
 #include <stdexcept>
+#include <cmath>
 
 #include "scenering/scene.h"
 #include "rendering/renderer.h"
@@ -17,5 +18,8 @@ public:
     RenderSystem() = default;
     ~RenderSystem() = default;
 
-    void render(Scene &scene, Renderer &renderer);
+    void render(
+        Scene &scene,
+        float shadowDistance,
+        Renderer &renderer);
 };
