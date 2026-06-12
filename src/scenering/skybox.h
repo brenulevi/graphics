@@ -7,6 +7,7 @@
 class Skybox
 {
 public:
+    Skybox() = default;
     Skybox(std::shared_ptr<Cubemap> cubemap)
         : m_cubemap(std::move(cubemap)) {}
     ~Skybox() = default;

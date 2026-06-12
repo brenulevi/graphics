@@ -116,6 +116,16 @@
 },
 {
   "directory": "/home/breno/dev/graphics/out/build/linux",
+  "command": "/usr/bin/g++ -DGLFW_INCLUDE_NONE -DGLM_ENABLE_EXPERIMENTAL -I/home/breno/dev/graphics/src -I/home/breno/dev/graphics/external/stb_image -I/home/breno/dev/graphics/external/glm -I/home/breno/dev/graphics/external/glad/include -I/home/breno/dev/graphics/external/glfw/include -I/home/breno/dev/graphics/external/assimp/include -I/home/breno/dev/graphics/out/build/linux/gladsources/glad/include -I/home/breno/dev/graphics/external/assimp/code/../include -I/home/breno/dev/graphics/out/build/linux/external/assimp/code/../include -g -Wno-error -Wno-error=unused-parameter -Wno-error=maybe-uninitialized -std=gnu++20 -o CMakeFiles/MyGame.dir/src/scenering/scenemanager.cpp.o -c /home/breno/dev/graphics/src/scenering/scenemanager.cpp",
+  "file": "/home/breno/dev/graphics/src/scenering/scenemanager.cpp"
+},
+{
+  "directory": "/home/breno/dev/graphics/out/build/linux",
+  "command": "/usr/bin/g++ -DGLFW_INCLUDE_NONE -DGLM_ENABLE_EXPERIMENTAL -I/home/breno/dev/graphics/src -I/home/breno/dev/graphics/external/stb_image -I/home/breno/dev/graphics/external/glm -I/home/breno/dev/graphics/external/glad/include -I/home/breno/dev/graphics/external/glfw/include -I/home/breno/dev/graphics/external/assimp/include -I/home/breno/dev/graphics/out/build/linux/gladsources/glad/include -I/home/breno/dev/graphics/external/assimp/code/../include -I/home/breno/dev/graphics/out/build/linux/external/assimp/code/../include -g -Wno-error -Wno-error=unused-parameter -Wno-error=maybe-uninitialized -std=gnu++20 -o CMakeFiles/MyGame.dir/src/scenes/demoscene.cpp.o -c /home/breno/dev/graphics/src/scenes/demoscene.cpp",
+  "file": "/home/breno/dev/graphics/src/scenes/demoscene.cpp"
+},
+{
+  "directory": "/home/breno/dev/graphics/out/build/linux",
   "command": "/usr/bin/g++ -DGLFW_INCLUDE_NONE -DGLM_ENABLE_EXPERIMENTAL -I/home/breno/dev/graphics/src -I/home/breno/dev/graphics/external/stb_image -I/home/breno/dev/graphics/external/glm -I/home/breno/dev/graphics/external/glad/include -I/home/breno/dev/graphics/external/glfw/include -I/home/breno/dev/graphics/external/assimp/include -I/home/breno/dev/graphics/out/build/linux/gladsources/glad/include -I/home/breno/dev/graphics/external/assimp/code/../include -I/home/breno/dev/graphics/out/build/linux/external/assimp/code/../include -g -Wno-error -Wno-error=unused-parameter -Wno-error=maybe-uninitialized -std=gnu++20 -o CMakeFiles/MyGame.dir/src/systems/rendersystem.cpp.o -c /home/breno/dev/graphics/src/systems/rendersystem.cpp",
   "file": "/home/breno/dev/graphics/src/systems/rendersystem.cpp"
 },

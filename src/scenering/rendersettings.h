@@ -1,22 +1,11 @@
 #pragma once
 
-#include "resources/assetmanager.h"
 #include "skybox.h"
 
 class RenderSettings
 {
 public:
-    RenderSettings()
-        : m_skybox(Skybox(AssetManager::loadCubemap("skybox", {
-            "assets/textures/skybox/right.jpg",
-            "assets/textures/skybox/left.jpg",
-            "assets/textures/skybox/top.jpg",
-            "assets/textures/skybox/bottom.jpg",
-            "assets/textures/skybox/front.jpg",
-            "assets/textures/skybox/back.jpg"
-        })))
-    {
-    }
+    RenderSettings() = default;
     ~RenderSettings() = default;
 
     inline bool getSkyboxEnabled() const { return m_skyboxEnabled; }

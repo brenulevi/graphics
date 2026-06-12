@@ -173,8 +173,13 @@ void RenderSystem::renderMainPass(RenderContext &ctx)
 {
     ctx.renderer.beginScene(ctx.sceneData);
 
-    auto skybox = ctx.scene.getRenderSettings().getSkybox();
-    ctx.renderer.drawSkybox(skybox);
+    const auto& renderSettings = ctx.scene.getRenderSettings();
+    if (renderSettings.getSkyboxEnabled())
+    {
+        const auto& skybox = renderSettings.getSkybox();
+        if (skybox.getCubemap())
+            ctx.renderer.drawSkybox(skybox);
+    }
 
     for (MeshRenderer *meshRenderer : ctx.meshRenderers)
     {

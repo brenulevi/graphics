@@ -113,6 +113,12 @@ add_executable(MyGame
     src/scenering/scenedata.h
     src/scenering/skybox.h
     src/scenering/rendersettings.h
+    src/scenering/iscenesetup.h
+    src/scenering/scenemanager.h
+    src/scenering/scenemanager.cpp
+
+    src/scenes/demoscene.h
+    src/scenes/demoscene.cpp
 
     src/systems/rendersystem.h
     src/systems/rendersystem.cpp
