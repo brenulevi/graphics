@@ -169,8 +169,20 @@ set_target_properties(assimp PROPERTIES
 # --------------------------------------------------
 # Assets
 # --------------------------------------------------
-add_custom_command(TARGET MyGame POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_directory
-    ${CMAKE_SOURCE_DIR}/assets
-    $<TARGET_FILE_DIR:MyGame>/assets
-)
+file(GLOB_RECURSE ASSETS_FILES CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/assets/*")
+add_custom_target(Assets ALL DEPENDS ${ASSETS_FILES})
+foreach(ASSET_FILE ${ASSETS_FILES})
+    file(RELATIVE_PATH REL_PATH ${CMAKE_SOURCE_DIR}/assets ${ASSET_FILE})
+    set(ASSETS_TARGET_PATH "${CMAKE_SOURCE_DIR}/out/build/linux/assets/${REL_PATH}")
+
+    add_custom_command(
+        OUTPUT ${ASSETS_TARGET_PATH}
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${ASSET_FILE} ${ASSETS_TARGET_PATH}
+        DEPENDS ${ASSET_FILE}
+        COMMENT "Copying asset: ${ASSET_FILE} to ${ASSETS_TARGET_PATH}"
+    )
+
+    list(APPEND ASSETS_TARGET_FILES ${ASSETS_TARGET_PATH})
+endforeach()
+
+add_custom_target(CopyAssets ALL DEPENDS ${ASSETS_TARGET_FILES})

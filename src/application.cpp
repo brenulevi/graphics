@@ -27,6 +27,20 @@ Application::Application()
         AssetManager::getTexture("container_specular"),
         32.0f);
 
+    auto floorDiffuse = AssetManager::loadTexture("floor_diffuse", "assets/textures/floor.jpg");
+    floorDiffuse->setWrapMode(TextureWrapMode::Repeat, TextureWrapMode::Repeat);
+    floorDiffuse->setFilterMode(TextureFilterMode::Linear, TextureFilterMode::Linear);
+    
+    auto floorSpecular = AssetManager::loadTexture("floor_specular", "assets/textures/floor_specular.jpg");
+    floorSpecular->setWrapMode(TextureWrapMode::Repeat, TextureWrapMode::Repeat);
+    floorSpecular->setFilterMode(TextureFilterMode::Linear, TextureFilterMode::Linear);
+    
+    std::shared_ptr<Material> floorMaterial = std::make_shared<Material>(
+        AssetManager::getShader("default"),
+        AssetManager::getTexture("floor_diffuse"),
+        AssetManager::getTexture("floor_specular"),
+        32.0f);
+
     std::vector<Vertex> quadVertices = {
         {{-0.5f, -0.5f, 0.0f}, {0.0f, 0.0f, 1.0f}, {0.0f, 0.0f}},
         {{0.5f, -0.5f, 0.0f}, {0.0f, 0.0f, 1.0f}, {1.0f, 0.0f}},
@@ -90,7 +104,7 @@ Application::Application()
 
     auto plane = m_scene->createGameObject("Plane");
     auto planeTransform = plane->addComponent<Transform>();
-    plane->addComponent<MeshRenderer>(quadMesh, material);
+    plane->addComponent<MeshRenderer>(quadMesh, floorMaterial);
     planeTransform->setLocalPosition(glm::vec3(0.0f, -2.0f, 0.0f));
     planeTransform->setLocalRotationEuler(glm::vec3(-90.0f, 0.0f, 0.0f));
     planeTransform->setLocalScale(glm::vec3(10.0f, 10.0f, 1.0f));
@@ -103,12 +117,12 @@ Application::Application()
     // player->addComponent<Spotlight>(glm::vec3(1.0f), 1.0f, 1.0f, 0.14f, 0.07f, glm::cos(glm::radians(12.5f)), glm::cos(glm::radians(17.5f)));
     m_scene->setMainCamera(camera);
 
-    auto sun = m_scene->createGameObject();
+    auto sun = m_scene->createGameObject("Sun");
     auto lightTransform = sun->addComponent<Transform>(glm::vec3(0.0f, 5.0f, 0.0f));
     lightTransform->setLocalRotationEuler(glm::vec3(-70.0f, 0.0f, 0.0f));
     sun->addComponent<DirectionalLight>(glm::vec3(1.0f), 1.0f);
 
-    auto pointLight = m_scene->createGameObject();
+    auto pointLight = m_scene->createGameObject("PointLight");
     auto pointLightTransform = pointLight->addComponent<Transform>(glm::vec3(2.0f, 1.0f, 0.0f));
     pointLightTransform->setLocalScale(glm::vec3(0.2f));
     pointLight->addComponent<PointLight>(glm::vec3(1.0f, 1.0f, 1.0f), 1.0f, 1.0f, 0.14f, 0.07f);
@@ -118,7 +132,7 @@ Application::Application()
         AssetManager::loadModel("backpack", "assets/models/backpack/backpack.obj")
     );
     auto backpackTransform = backpack->getComponent<Transform>();
-    backpackTransform->setLocalPosition(glm::vec3(-5.0f, 5.0f, 0.0f));
+    backpackTransform->setLocalPosition(glm::vec3(-2.5f, 5.0f, 0.0f));
 
     m_scene->start();
 }
@@ -141,6 +155,10 @@ void Application::run()
 
         m_window->pollEvents();
         Input::update();
+
+        auto sun = m_scene->getGameObjectByName("Sun");
+        auto sunTransform = sun->getComponent<Transform>();
+        sunTransform->rotateEuler(glm::vec3(-1.0f, 0.0f, 0.0f) * deltaTime);
 
         m_scene->update(deltaTime);
 

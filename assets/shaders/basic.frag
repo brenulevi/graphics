@@ -107,7 +107,7 @@ void main()
     vec3 diffuseTex = texture(u_Material.diffuse, v_TexCoord).rgb;
     vec3 specularTex = texture(u_Material.specular, v_TexCoord).rgb;
 
-    vec3 ambient = diffuseTex * 0.5f * u_DirectionalLight.color * u_DirectionalLight.intensity;
+    vec3 ambient = diffuseTex * 0.2f * u_DirectionalLight.color * u_DirectionalLight.intensity;
 
     vec3 result = ambient;
 
