@@ -72,6 +72,8 @@ add_executable(MyGame
     src/resources/meshloader.cpp
     src/resources/textureloader.h
     src/resources/textureloader.cpp
+    src/resources/cubemaploader.h
+    src/resources/cubemaploader.cpp
     src/resources/shaderloader.h
     src/resources/shaderloader.cpp
     src/resources/modelloader.h
@@ -94,6 +96,8 @@ add_executable(MyGame
     src/rendering/material.h
     src/rendering/texture.h
     src/rendering/texture.cpp
+    src/rendering/cubemap.h
+    src/rendering/cubemap.cpp
     src/rendering/model.h
     src/rendering/framebuffer.h
     src/rendering/framebuffer.cpp
@@ -120,6 +124,7 @@ add_executable(MyGame
     src/components/playercontroller.h
     src/components/playercontroller.cpp
     src/components/spotlight.h
+    src/components/skybox.h
 )
 
 # --------------------------------------------------

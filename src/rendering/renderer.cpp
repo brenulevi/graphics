@@ -1,9 +1,12 @@
 #include "renderer.h"
+#include "glad/gl.h"
 
 Renderer::Renderer() : m_viewportSize(800.0f, 600.0f) {
   if (!gladLoadGL((GLADloadfunc)glfwGetProcAddress)) {
     throw std::runtime_error("Failed to initialize GLAD!");
   }
+
+  setupSkybox();
 
   glEnable(GL_DEPTH_TEST);
   glEnable(GL_CULL_FACE);
@@ -107,7 +110,8 @@ void Renderer::draw(const Transform &transform, const Mesh &mesh,
                      spotLight.outerCutoff);
   }
 
-  shader->setMat4("u_ViewProjection", m_sceneData.viewProjectionMatrix);
+  auto viewProjectionMatrix = m_sceneData.projectionMatrix * m_sceneData.viewMatrix;
+  shader->setMat4("u_ViewProjection", viewProjectionMatrix);
   shader->setMat4("u_Model", transform.getWorldMatrix());
 
   mesh.bind();
@@ -139,8 +143,94 @@ void Renderer::drawShadow(const Transform &transform, const Mesh &mesh) {
 
 void Renderer::endShadowPass() { m_shadowMap->endRender(); }
 
+void Renderer::drawSkybox(const Transform &transform, const Cubemap &cubemap) {
+  glDepthMask(GL_FALSE);
+  glDisable(GL_CULL_FACE);
+
+  auto shader = m_skyboxShader;
+
+  if (!shader) {
+    throw std::runtime_error("Skybox shader not found!");
+  }
+
+  shader->use();
+
+  auto viewProjectionMatrix = m_sceneData.projectionMatrix * glm::mat4(glm::mat3(m_sceneData.viewMatrix));
+  shader->setMat4("u_ViewProjection", viewProjectionMatrix);
+
+  cubemap.bind(0);
+  shader->setInt("u_Cubemap", 0);
+
+  glDepthFunc(GL_LEQUAL);
+
+  m_skyboxMesh->bind();
+  glDrawElements(GL_TRIANGLES, m_skyboxMesh->getIndexBuffer().getCount(),
+                 GL_UNSIGNED_INT, nullptr);
+
+  glDepthFunc(GL_LESS);
+  glDepthMask(GL_TRUE);
+  glEnable(GL_CULL_FACE);
+}
+
 void Renderer::setViewportSize(float width, float height) {
   m_viewportSize = {width, height};
 
   glViewport(0, 0, static_cast<int>(width), static_cast<int>(height));
+}
+
+void Renderer::setupSkybox() {
+  m_skyboxShader = AssetManager::loadShader(
+      "skybox", "assets/shaders/skybox.vert", "assets/shaders/skybox.frag");
+
+  std::vector<Vertex> vertices = {
+      {{-1.0f, 1.0f, -1.0f}, {}, {}},
+      {{-1.0f, -1.0f, -1.0f}, {}, {}},
+      {{1.0f, -1.0f, -1.0f}, {}, {}},
+      {{1.0f, -1.0f, -1.0f}, {}, {}},
+      {{1.0f, 1.0f, -1.0f}, {}, {}},
+      {{-1.0f, 1.0f, -1.0f}, {}, {}},
+
+      {{-1.0f, -1.0f, 1.0f}, {}, {}},
+      {{-1.0f, -1.0f, -1.0f}, {}, {}},
+      {{-1.0f, 1.0f, -1.0f}, {}, {}},
+      {{-1.0f, 1.0f, -1.0f}, {}, {}},
+      {{-1.0f, 1.0f, 1.0f}, {}, {}},
+      {{-1.0f, -1.0f, 1.0f}, {}, {}},
+
+      {{1.0f, -1.0f, -1.0f}, {}, {}},
+      {{1.0f, -1.0f, 1.0f}, {}, {}},
+      {{1.0f, 1.0f, 1.0f}, {}, {}},
+      {{1.0f, 1.0f, 1.0f}, {}, {}},
+      {{1.0f, 1.0f, -1.0f}, {}, {}},
+      {{1.0f, -1.0f, -1.0f}, {}, {}},
+
+      {{-1.0f, -1.0f, 1.0f}, {}, {}},
+      {{-1.0f, 1.0f, 1.0f}, {}, {}},
+      {{1.0f, 1.0f, 1.0f}, {}, {}},
+      {{1.0f, 1.0f, 1.0f}, {}, {}},
+      {{1.0f, -1.0f, 1.0f}, {}, {}},
+      {{-1.0f, -1.0f, 1.0f}, {}, {}},
+
+      {{-1.0f, 1.0f, -1.0f}, {}, {}},
+      {{1.0f, 1.0f, -1.0f}, {}, {}},
+      {{1.0f, 1.0f, 1.0f}, {}, {}},
+      {{1.0f, 1.0f, 1.0f}, {}, {}},
+      {{-1.0f, 1.0f, 1.0f}, {}, {}},
+      {{-1.0f, 1.0f, -1.0f}, {}, {}},
+
+      {{-1.0f, -1.0f, -1.0f}, {}, {}},
+      {{-1.0f, -1.0f, 1.0f}, {}, {}},
+      {{1.0f, -1.0f, -1.0f}, {}, {}},
+      {{1.0f, -1.0f, -1.0f}, {}, {}},
+      {{-1.0f, -1.0f, 1.0f}, {}, {}},
+      {{1.0f, -1.0f, 1.0f}, {}, {}},
+  };
+
+  std::vector<unsigned int> indices(vertices.size());
+  for (unsigned int i = 0; i < indices.size(); ++i)
+  {
+    indices[i] = i;
+  }
+
+  m_skyboxMesh = AssetManager::createMesh("skybox", vertices, indices);
 }

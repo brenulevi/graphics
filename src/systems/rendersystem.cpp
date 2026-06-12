@@ -16,7 +16,8 @@ void RenderSystem::render(
         throw std::runtime_error("Main camera has no transform component.");
 
     SceneData sceneData{
-        .viewProjectionMatrix = mainCamera->getProjectionMatrix(renderer.getAspectRatio()) * mainCamera->getViewMatrix(),
+        .projectionMatrix = mainCamera->getProjectionMatrix(renderer.getAspectRatio()),
+        .viewMatrix = mainCamera->getViewMatrix(),
         .cameraPosition = cameraTransform->getWorldPosition(),
         .directionalLight = {
             .direction = glm::vec3(0.0f, -1.0f, 0.0f),
@@ -134,6 +135,14 @@ void RenderSystem::render(
     }
 
     renderer.beginScene(sceneData);
+
+    auto skybox = scene.getComponents<Skybox>();
+    if (!skybox.empty())
+    {
+        auto skyboxComponent = skybox[0];
+        auto skyboxTransform = skyboxComponent->getGameObject()->getComponent<Transform>();
+        renderer.drawSkybox(*skyboxTransform, *skyboxComponent->getCubemap());
+    }
 
     for (MeshRenderer *meshRenderer : meshRenderers)
     {

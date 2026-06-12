@@ -2,6 +2,7 @@
 
 std::unordered_map<std::string, std::shared_ptr<Mesh>> AssetManager::s_meshes;
 std::unordered_map<std::string, std::shared_ptr<Texture>> AssetManager::s_textures;
+std::unordered_map<std::string, std::shared_ptr<Cubemap>> AssetManager::s_cubemaps;
 std::unordered_map<std::string, std::shared_ptr<Shader>> AssetManager::s_shaders;
 std::unordered_map<std::string, std::shared_ptr<Model>> AssetManager::s_models;
 
@@ -9,6 +10,7 @@ void AssetManager::clear()
 {
     s_models.clear();
     s_shaders.clear();
+    s_cubemaps.clear();
     s_textures.clear();
     s_meshes.clear();
 }
@@ -47,9 +49,22 @@ std::shared_ptr<Texture> AssetManager::createTexture(const std::string &name, in
         return it->second;
     }
 
-    auto texture = std::make_shared<Texture>(width, height, format);
+    auto texture = TextureLoader::createTexture(width, height, format);
     s_textures[name] = texture;
     return texture;
+}
+
+std::shared_ptr<Cubemap> AssetManager::loadCubemap(const std::string &name, const std::vector<std::string> &faces)
+{
+    auto it = s_cubemaps.find(name);
+    if (it != s_cubemaps.end())
+    {
+        return it->second;
+    }
+
+    auto cubemap = CubemapLoader::loadFromFiles(faces);
+    s_cubemaps[name] = cubemap;
+    return cubemap;
 }
 
 std::shared_ptr<Shader> AssetManager::loadShader(const std::string &name, const std::string &vertexPath, const std::string &fragmentPath)

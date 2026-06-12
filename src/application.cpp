@@ -134,6 +134,17 @@ Application::Application()
     auto backpackTransform = backpack->getComponent<Transform>();
     backpackTransform->setLocalPosition(glm::vec3(-2.5f, 5.0f, 0.0f));
 
+    auto skybox = m_scene->createGameObject("Skybox");
+    auto skyboxTransform = skybox->addComponent<Transform>();
+    skybox->addComponent<Skybox>(AssetManager::loadCubemap("skybox", {
+        "assets/textures/skybox/right.jpg",
+        "assets/textures/skybox/left.jpg",
+        "assets/textures/skybox/top.jpg",
+        "assets/textures/skybox/bottom.jpg",
+        "assets/textures/skybox/front.jpg",
+        "assets/textures/skybox/back.jpg"
+    }));
+
     m_scene->start();
 }
 

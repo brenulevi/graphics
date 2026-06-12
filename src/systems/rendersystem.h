@@ -11,6 +11,7 @@
 #include "components/directionallight.h"
 #include "components/pointlight.h"
 #include "components/spotlight.h"
+#include "components/skybox.h"
 
 class RenderSystem
 {

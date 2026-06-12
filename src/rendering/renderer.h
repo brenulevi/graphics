@@ -3,6 +3,7 @@
 #include <glad/gl.h>
 #include <GLFW/glfw3.h>
 #include <stdexcept>
+#include <vector>
 
 #include "components/camera.h"
 #include "components/transform.h"
@@ -30,12 +31,20 @@ public:
     void drawShadow(const Transform& transform, const Mesh& mesh);
     void endShadowPass();
 
+    void drawSkybox(const Transform& transform, const Cubemap& cubemap);
+
     void setViewportSize(float width, float height);
 
     inline float getAspectRatio() const { return m_viewportSize.x / m_viewportSize.y; }
 
 private:
+    void setupSkybox();
+
+private:
     glm::vec2 m_viewportSize;
     SceneData m_sceneData;
     ShadowMap* m_shadowMap;
+
+    std::shared_ptr<Shader> m_skyboxShader;
+    std::shared_ptr<Mesh> m_skyboxMesh;
 };
