@@ -1,15 +1,25 @@
 #include "rendersystem.h"
 
-void RenderSystem::render(
-    Scene &scene,
-    float shadowDistance,
-    Renderer &renderer)
+void RenderSystem::render(Scene &scene, Renderer &renderer)
 {
+    auto ctx = buildRenderContext(scene, renderer);
+
+    setupDirectionalLight(ctx);
+    renderShadowPass(ctx);
+
+    collectPointLights(ctx);
+    collectSpotLights(ctx);
+
+    renderMainPass(ctx);
+}
+
+RenderSystem::RenderContext RenderSystem::buildRenderContext(Scene &scene, Renderer &renderer)
+{
+    auto renderSettings = scene.getRenderSettings();
+
     Camera *mainCamera = scene.getMainCamera();
     if (!mainCamera)
-    {
         throw std::runtime_error("No main camera set in the scene.");
-    }
 
     auto cameraTransform = mainCamera->getGameObject()->getComponent<Transform>();
     if (!cameraTransform)
@@ -26,76 +36,97 @@ void RenderSystem::render(
         }
     };
 
-    auto meshRenderers = scene.getComponents<MeshRenderer>();
+    return RenderContext{
+        .scene = scene,
+        .renderer = renderer,
+        .mainCamera = mainCamera,
+        .cameraTransform = cameraTransform,
+        .shadowDistance = renderSettings.getShadowDistance(),
+        .meshRenderers = scene.getComponents<MeshRenderer>(),
+        .sceneData = sceneData
+    };
+}
 
-    auto directionalLight = scene.getComponents<DirectionalLight>();
-    if (!directionalLight.empty())
+void RenderSystem::setupDirectionalLight(RenderContext &ctx)
+{
+    auto directionalLights = ctx.scene.getComponents<DirectionalLight>();
+    if (directionalLights.empty())
+        return;
+
+    auto light = directionalLights[0];
+    auto lightTransform = light->getGameObject()->getComponent<Transform>();
+
+    ctx.directionalLight = light;
+    ctx.sceneData.directionalLight.direction = lightTransform->getForward();
+    ctx.sceneData.directionalLight.color = light->getColor();
+    ctx.sceneData.directionalLight.intensity = light->getIntensity();
+}
+
+void RenderSystem::renderShadowPass(RenderContext &ctx)
+{
+    if (!ctx.directionalLight)
+        return;
+
+    auto lightDirection = ctx.sceneData.directionalLight.direction;
+    auto &shadowMap = ctx.directionalLight->getShadowMap();
+
+    auto cameraPosition = ctx.cameraTransform->getWorldPosition();
+    auto cameraForward = ctx.cameraTransform->getForward();
+
+    auto center = cameraPosition + cameraForward * ctx.shadowDistance * 0.5f;
+    auto lightPos = center - lightDirection * ctx.shadowDistance;
+
+    glm::vec3 up = glm::abs(glm::dot(glm::normalize(lightDirection), glm::vec3(0.0f, 1.0f, 0.0f))) > 0.99f
+        ? glm::vec3(0.0f, 0.0f, 1.0f)
+        : glm::vec3(0.0f, 1.0f, 0.0f);
+
+    glm::mat4 lightViewMatrix = glm::lookAt(
+        lightPos,
+        center,
+        up
+    );
+
+    const float shadowMapResolution = static_cast<float>(shadowMap.getWidth());
+    const float texelSize = (ctx.shadowDistance * 2.0f) / shadowMapResolution;
+
+    glm::vec3 centerInLightSpace = glm::vec3(lightViewMatrix * glm::vec4(center, 1.0f));
+    centerInLightSpace.x = std::floor(centerInLightSpace.x / texelSize) * texelSize;
+    centerInLightSpace.y = std::floor(centerInLightSpace.y / texelSize) * texelSize;
+
+    glm::vec3 snappedCenter = glm::vec3(glm::inverse(lightViewMatrix) * glm::vec4(centerInLightSpace, 1.0f));
+    glm::vec3 snappedLightPos = snappedCenter - lightDirection * ctx.shadowDistance;
+
+    lightViewMatrix = glm::lookAt(
+        snappedLightPos,
+        snappedCenter,
+        up
+    );
+
+    glm::mat4 lightProjectionMatrix = glm::ortho(
+        -ctx.shadowDistance,
+        ctx.shadowDistance,
+        -ctx.shadowDistance,
+        ctx.shadowDistance,
+        0.1f,
+        ctx.shadowDistance * 4.0f
+    );
+
+    shadowMap.setLightSpaceMatrix(lightProjectionMatrix * lightViewMatrix);
+
+    ctx.renderer.beginShadowPass(&shadowMap);
+
+    for (MeshRenderer *meshRenderer : ctx.meshRenderers)
     {
-        auto light = directionalLight[0];
-        auto lightTransform = light->getGameObject()->getComponent<Transform>();
-        auto lightDirection = lightTransform->getForward();
-
-        sceneData.directionalLight.direction = lightDirection;
-        sceneData.directionalLight.color = light->getColor();
-        sceneData.directionalLight.intensity = light->getIntensity();
-
-        auto& shadowMap = light->getShadowMap();
-        
-        auto cameraPosition = cameraTransform->getWorldPosition();
-        auto cameraForward = cameraTransform->getForward();
-
-        auto center = cameraPosition + cameraForward * shadowDistance * 0.5f;
-        auto lightPos = center - lightDirection * shadowDistance;
-
-        glm::vec3 up = glm::abs(glm::dot(glm::normalize(lightDirection), glm::vec3(0.0f, 1.0f, 0.0f))) > 0.99f
-            ? glm::vec3(0.0f, 0.0f, 1.0f)
-            : glm::vec3(0.0f, 1.0f, 0.0f);
-
-        glm::mat4 lightViewMatrix = glm::lookAt(
-            lightPos,
-            center,
-            up
-        );
-
-        const float shadowMapResolution = static_cast<float>(shadowMap.getWidth());
-        const float texelSize = (shadowDistance * 2.0f) / shadowMapResolution;
-
-        glm::vec3 centerInLightSpace = glm::vec3(lightViewMatrix * glm::vec4(center, 1.0f));
-        centerInLightSpace.x = std::floor(centerInLightSpace.x / texelSize) * texelSize;
-        centerInLightSpace.y = std::floor(centerInLightSpace.y / texelSize) * texelSize;
-
-        glm::vec3 snappedCenter = glm::vec3(glm::inverse(lightViewMatrix) * glm::vec4(centerInLightSpace, 1.0f));
-        glm::vec3 snappedLightPos = snappedCenter - lightDirection * shadowDistance;
-
-        lightViewMatrix = glm::lookAt(
-            snappedLightPos,
-            snappedCenter,
-            up
-        );
-
-        glm::mat4 lightProjectionMatrix = glm::ortho(
-            -shadowDistance,
-            shadowDistance,
-            -shadowDistance,
-            shadowDistance,
-            0.1f,
-            shadowDistance * 4.0f
-        );
-
-        shadowMap.setLightSpaceMatrix(lightProjectionMatrix * lightViewMatrix);
-
-        renderer.beginShadowPass(&shadowMap);
-
-        for (MeshRenderer *meshRenderer : meshRenderers)
-        {
-            auto *transform = meshRenderer->getGameObject()->getComponent<Transform>();
-            renderer.drawShadow(*transform, *meshRenderer->getMesh());
-        }
-
-        renderer.endShadowPass();
+        auto *transform = meshRenderer->getGameObject()->getComponent<Transform>();
+        ctx.renderer.drawShadow(*transform, *meshRenderer->getMesh());
     }
 
-    auto pointLights = scene.getComponents<PointLight>();
+    ctx.renderer.endShadowPass();
+}
+
+void RenderSystem::collectPointLights(RenderContext &ctx)
+{
+    auto pointLights = ctx.scene.getComponents<PointLight>();
     for (PointLight *pointLight : pointLights)
     {
         auto pointLightTransform = pointLight->getGameObject()->getComponent<Transform>();
@@ -110,10 +141,13 @@ void RenderSystem::render(
             .linear = pointLight->getLinear(),
             .quadratic = pointLight->getQuadratic()
         };
-        sceneData.pointLights.push_back(pointLightData);
+        ctx.sceneData.pointLights.push_back(pointLightData);
     }
+}
 
-    auto spotLights = scene.getComponents<Spotlight>();
+void RenderSystem::collectSpotLights(RenderContext &ctx)
+{
+    auto spotLights = ctx.scene.getComponents<Spotlight>();
     for (Spotlight *spotLight : spotLights)
     {
         auto spotLightTransform = spotLight->getGameObject()->getComponent<Transform>();
@@ -131,24 +165,22 @@ void RenderSystem::render(
             .innerCutoff = spotLight->getInnerCutoff(),
             .outerCutoff = spotLight->getOuterCutoff()
         };
-        sceneData.spotLights.push_back(spotLightData);
+        ctx.sceneData.spotLights.push_back(spotLightData);
     }
+}
 
-    renderer.beginScene(sceneData);
+void RenderSystem::renderMainPass(RenderContext &ctx)
+{
+    ctx.renderer.beginScene(ctx.sceneData);
 
-    auto skybox = scene.getComponents<Skybox>();
-    if (!skybox.empty())
-    {
-        auto skyboxComponent = skybox[0];
-        auto skyboxTransform = skyboxComponent->getGameObject()->getComponent<Transform>();
-        renderer.drawSkybox(*skyboxTransform, *skyboxComponent->getCubemap());
-    }
+    auto skybox = ctx.scene.getRenderSettings().getSkybox();
+    ctx.renderer.drawSkybox(skybox);
 
-    for (MeshRenderer *meshRenderer : meshRenderers)
+    for (MeshRenderer *meshRenderer : ctx.meshRenderers)
     {
         auto *transform = meshRenderer->getGameObject()->getComponent<Transform>();
-        renderer.draw(*transform, *meshRenderer->getMesh(), *meshRenderer->getMaterial());
+        ctx.renderer.draw(*transform, *meshRenderer->getMesh(), *meshRenderer->getMaterial());
     }
 
-    renderer.endScene();
+    ctx.renderer.endScene();
 }

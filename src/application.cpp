@@ -11,7 +11,8 @@ Application::Application()
 
     m_renderSystem = std::make_unique<RenderSystem>();
 
-    m_scene = std::make_unique<Scene>();
+    RenderSettings renderSettings;
+    m_scene = std::make_unique<Scene>(renderSettings);
 
     AssetManager::loadShader("default", "assets/shaders/basic.vert", "assets/shaders/basic.frag");
     
@@ -134,17 +135,6 @@ Application::Application()
     auto backpackTransform = backpack->getComponent<Transform>();
     backpackTransform->setLocalPosition(glm::vec3(-2.5f, 5.0f, 0.0f));
 
-    auto skybox = m_scene->createGameObject("Skybox");
-    auto skyboxTransform = skybox->addComponent<Transform>();
-    skybox->addComponent<Skybox>(AssetManager::loadCubemap("skybox", {
-        "assets/textures/skybox/right.jpg",
-        "assets/textures/skybox/left.jpg",
-        "assets/textures/skybox/top.jpg",
-        "assets/textures/skybox/bottom.jpg",
-        "assets/textures/skybox/front.jpg",
-        "assets/textures/skybox/back.jpg"
-    }));
-
     m_scene->start();
 }
 
@@ -175,7 +165,7 @@ void Application::run()
 
         m_renderer->clear();
 
-        m_renderSystem->render(*m_scene, 30.0f, *m_renderer);
+        m_renderSystem->render(*m_scene, *m_renderer);
 
         m_window->swapBuffers();
     }

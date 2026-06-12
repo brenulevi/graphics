@@ -11,6 +11,7 @@
 #include "rendering/material.h"
 #include "scenering/scenedata.h"
 #include "rendering/shadowmap.h"
+#include "scenering/skybox.h"
 
 #define MAX_POINT_LIGHTS 4
 #define MAX_SPOT_LIGHTS 4
@@ -31,7 +32,7 @@ public:
     void drawShadow(const Transform& transform, const Mesh& mesh);
     void endShadowPass();
 
-    void drawSkybox(const Transform& transform, const Cubemap& cubemap);
+    void drawSkybox(const Skybox& skybox);
 
     void setViewportSize(float width, float height);
 

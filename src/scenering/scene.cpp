@@ -1,5 +1,10 @@
 #include "scene.h"
 
+Scene::Scene(const RenderSettings& renderSettings)
+    : m_renderSettings(renderSettings)
+{
+}
+
 GameObject *Scene::createGameObject(const std::string &name)
 {
     auto gameObject = std::make_unique<GameObject>(*this);

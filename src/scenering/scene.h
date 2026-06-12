@@ -4,15 +4,17 @@
 #include <memory>
 
 #include "gameobject.h"
+#include "rendersettings.h"
 #include "components/camera.h"
 #include "rendering/model.h"
 #include "components/meshrenderer.h"
 #include "components/transform.h"
+#include "resources/assetmanager.h"
 
 class Scene
 {
 public:
-    Scene() = default;
+    Scene(const RenderSettings& renderSettings);
     ~Scene() = default;
 
     GameObject* createGameObject(const std::string& name = "GameObject");
@@ -26,6 +28,9 @@ public:
     inline Camera* getMainCamera() const { return m_mainCamera; }
     inline void setMainCamera(Camera* camera) { m_mainCamera = camera; }
 
+    inline const RenderSettings& getRenderSettings() const { return m_renderSettings; }
+    inline void setRenderSettings(const RenderSettings& renderSettings) { m_renderSettings = renderSettings; }
+
     GameObject* instantiateModel(const std::shared_ptr<Model>& model);
 
     GameObject* getGameObjectByName(const std::string& name) const;
@@ -36,6 +41,7 @@ private:
 private:
     std::vector<std::unique_ptr<GameObject>> m_gameObjects;
     Camera* m_mainCamera = nullptr;
+    RenderSettings m_renderSettings;
 };
 
 template <typename T>

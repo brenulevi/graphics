@@ -6,6 +6,8 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
+cmake_policy(SET CMP0072 NEW)
+
 # --------------------------------------------------
 # Warnings
 # --------------------------------------------------
@@ -109,6 +111,8 @@ add_executable(MyGame
     src/scenering/gameobject.h
     src/scenering/gameobject.cpp
     src/scenering/scenedata.h
+    src/scenering/skybox.h
+    src/scenering/rendersettings.h
 
     src/systems/rendersystem.h
     src/systems/rendersystem.cpp
@@ -124,7 +128,6 @@ add_executable(MyGame
     src/components/playercontroller.h
     src/components/playercontroller.cpp
     src/components/spotlight.h
-    src/components/skybox.h
 )
 
 # --------------------------------------------------
@@ -178,7 +181,7 @@ file(GLOB_RECURSE ASSETS_FILES CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/assets/*")
 add_custom_target(Assets ALL DEPENDS ${ASSETS_FILES})
 foreach(ASSET_FILE ${ASSETS_FILES})
     file(RELATIVE_PATH REL_PATH ${CMAKE_SOURCE_DIR}/assets ${ASSET_FILE})
-    set(ASSETS_TARGET_PATH "${CMAKE_SOURCE_DIR}/out/build/linux/assets/${REL_PATH}")
+    set(ASSETS_TARGET_PATH "${CMAKE_BINARY_DIR}/assets/${REL_PATH}")
 
     add_custom_command(
         OUTPUT ${ASSETS_TARGET_PATH}

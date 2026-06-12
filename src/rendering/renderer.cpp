@@ -143,9 +143,10 @@ void Renderer::drawShadow(const Transform &transform, const Mesh &mesh) {
 
 void Renderer::endShadowPass() { m_shadowMap->endRender(); }
 
-void Renderer::drawSkybox(const Transform &transform, const Cubemap &cubemap) {
+void Renderer::drawSkybox(const Skybox &skybox) {
   glDepthMask(GL_FALSE);
-  glDisable(GL_CULL_FACE);
+  glDepthFunc(GL_LEQUAL);
+  glEnable(GL_CULL_FACE);
 
   auto shader = m_skyboxShader;
 
@@ -158,10 +159,8 @@ void Renderer::drawSkybox(const Transform &transform, const Cubemap &cubemap) {
   auto viewProjectionMatrix = m_sceneData.projectionMatrix * glm::mat4(glm::mat3(m_sceneData.viewMatrix));
   shader->setMat4("u_ViewProjection", viewProjectionMatrix);
 
-  cubemap.bind(0);
+  skybox.getCubemap()->bind(0);
   shader->setInt("u_Cubemap", 0);
-
-  glDepthFunc(GL_LEQUAL);
 
   m_skyboxMesh->bind();
   glDrawElements(GL_TRIANGLES, m_skyboxMesh->getIndexBuffer().getCount(),
@@ -169,7 +168,6 @@ void Renderer::drawSkybox(const Transform &transform, const Cubemap &cubemap) {
 
   glDepthFunc(GL_LESS);
   glDepthMask(GL_TRUE);
-  glEnable(GL_CULL_FACE);
 }
 
 void Renderer::setViewportSize(float width, float height) {
@@ -226,10 +224,14 @@ void Renderer::setupSkybox() {
       {{1.0f, -1.0f, 1.0f}, {}, {}},
   };
 
-  std::vector<unsigned int> indices(vertices.size());
-  for (unsigned int i = 0; i < indices.size(); ++i)
-  {
-    indices[i] = i;
+  std::vector<unsigned int> indices;
+  for (int i = 0; i < vertices.size(); i += 3) {
+    indices.push_back(i);
+    indices.push_back(i + 1);
+    indices.push_back(i + 2);
+    indices.push_back(i + 2);
+    indices.push_back(i + 1);
+    indices.push_back(i + 3);
   }
 
   m_skyboxMesh = AssetManager::createMesh("skybox", vertices, indices);
