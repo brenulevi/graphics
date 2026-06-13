@@ -143,6 +143,8 @@ add_executable(MyGame
     src/editor/sceneeditor.cpp
     src/editor/gameview.h
     src/editor/gameview.cpp
+    src/editor/playmode.h
+    src/editor/playmode.cpp
 
     src/systems/rendersystem.h
     src/systems/rendersystem.cpp

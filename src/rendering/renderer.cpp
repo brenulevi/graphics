@@ -62,6 +62,7 @@ void Renderer::drawStandard(const Transform &transform, const Mesh &mesh,
   if (m_shadowMap) {
     m_shadowMap->getDepthTexture()->bind(5);
     shader->setInt("u_ShadowMap", 5);
+    shader->setFloat("u_ShadowBias", m_sceneData.shadowBias);
     shader->setMat4("u_LightSpaceMatrix", m_shadowMap->getLightSpaceMatrix());
   }
 

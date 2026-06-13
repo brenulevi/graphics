@@ -59,6 +59,7 @@ uniform int u_NumSpotLights;
 uniform vec3 u_ViewPos;
 
 uniform sampler2D u_ShadowMap;
+uniform float u_ShadowBias;
 
 out vec4 o_FragColor;
 
@@ -81,7 +82,7 @@ float calcShadow(vec4 lightSpacePos, vec3 normal)
     float currentDepth = projCoords.z;
 
     vec3 lightDir = normalize(-u_DirectionalLight.direction);
-    float bias = max(0.005 * (1.0 - dot(normal, lightDir)), 0.001);
+    float bias = max(u_ShadowBias * (1.0 - dot(normal, lightDir)), 0.001);
 
     float shadow = 0.0;
     vec2 texelSize = 1.0 / vec2(textureSize(u_ShadowMap, 0));

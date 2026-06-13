@@ -16,6 +16,7 @@
 #include "editor/imguilayer.h"
 #include "editor/sceneeditor.h"
 #include "editor/gameview.h"
+#include "editor/playmode.h"
 
 class Application
 {
@@ -28,6 +29,7 @@ public:
 private:
     void onClose();
     void onResize(int width, int height);
+    void updateEditorInput(bool gameViewActive);
 
 private:
     bool m_isRunning = true;
@@ -37,5 +39,6 @@ private:
     std::unique_ptr<ImGuiLayer> m_imguiLayer;
     SceneEditor m_sceneEditor;
     GameView m_gameView;
+    PlayMode m_playMode;
     SceneManager m_sceneManager;
 };

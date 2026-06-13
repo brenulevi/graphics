@@ -8,7 +8,7 @@ namespace
     }
 }
 
-void SceneEditor::drawDockspace()
+void SceneEditor::drawDockspace(Scene& scene, PlayMode& playMode)
 {
     ImGuiWindowFlags windowFlags =
         ImGuiWindowFlags_MenuBar |
@@ -26,6 +26,21 @@ void SceneEditor::drawDockspace()
 
     ImGui::Begin("EditorDockSpaceHost", nullptr, windowFlags);
     ImGui::PopStyleVar(2);
+
+    if (ImGui::BeginMenuBar())
+    {
+        if (playMode.isPlaying())
+        {
+            if (ImGui::MenuItem("Stop", "Esc"))
+                playMode.stop();
+        }
+        else if (ImGui::MenuItem("Play", "F5"))
+        {
+            playMode.start();
+        }
+
+        ImGui::EndMenuBar();
+    }
 
     ImGuiID dockspaceId = ImGui::GetID("EditorDockSpace");
     ImGui::DockSpace(dockspaceId, ImVec2(0.0f, 0.0f));
@@ -309,6 +324,8 @@ void SceneEditor::drawPlayerController(GameObject* gameObject)
 
     if (!ImGui::CollapsingHeader("Player Controller"))
         return;
+
+    ImGui::TextUnformatted("Runs during Play mode.");
 
     float moveSpeed = controller->getMoveSpeed();
     if (ImGui::DragFloat("Move Speed", &moveSpeed, 0.1f, 0.1f, 50.0f))

@@ -23,6 +23,9 @@ public:
     void setSensitivity(float sensitivity) { m_sensitivity = sensitivity; }
 
 private:
+    void syncRotationFromTransform();
+
+private:
     float m_moveSpeed;
     float m_sensitivity;
     bool m_firstMouse = true;

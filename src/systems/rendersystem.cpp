@@ -29,6 +29,7 @@ RenderSystem::RenderContext RenderSystem::buildRenderContext(Scene &scene, Rende
         .projectionMatrix = mainCamera->getProjectionMatrix(renderer.getAspectRatio()),
         .viewMatrix = mainCamera->getViewMatrix(),
         .cameraPosition = cameraTransform->getWorldPosition(),
+        .shadowBias = renderSettings.getShadowBias(),
         .directionalLight = {
             .direction = glm::vec3(0.0f, -1.0f, 0.0f),
             .color = glm::vec3(1.0f),

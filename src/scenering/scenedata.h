@@ -41,6 +41,8 @@ struct SceneData
     glm::mat4 viewMatrix;
     
     glm::vec3 cameraPosition;
+
+    float shadowBias;
     
     DirectionalLightData directionalLight;
     std::vector<PointLightData> pointLights;

@@ -12,6 +12,7 @@
 #include "components/pointlight.h"
 #include "components/spotlight.h"
 #include "components/transform.h"
+#include "editor/playmode.h"
 #include "rendering/material.h"
 #include "scenering/gameobject.h"
 #include "scenering/rendersettings.h"
@@ -20,7 +21,7 @@
 class SceneEditor
 {
 public:
-    void drawDockspace();
+    void drawDockspace(Scene& scene, PlayMode& playMode);
     void drawPanels(Scene& scene);
 
 private:

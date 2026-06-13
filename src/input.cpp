@@ -4,9 +4,6 @@ bool Input::m_currentKeys[GLFW_KEY_LAST] = { false };
 bool Input::m_previousKeys[GLFW_KEY_LAST] = { false };
 bool Input::m_currentMouseButtons[GLFW_MOUSE_BUTTON_LAST] = { false };
 bool Input::m_previousMouseButtons[GLFW_MOUSE_BUTTON_LAST] = { false };
-bool Input::m_uiCapturing = false;
-bool Input::m_gameViewFocused = false;
-bool Input::m_mouseLookActive = false;
 glm::vec2 Input::m_currentMousePosition = glm::vec2(0.0f);
 glm::vec2 Input::m_previousMousePosition = glm::vec2(0.0f);
 
@@ -14,7 +11,7 @@ void Input::update()
 {
     memcpy(m_previousKeys, m_currentKeys, sizeof(m_currentKeys));
     memcpy(m_previousMouseButtons, m_currentMouseButtons, sizeof(m_currentMouseButtons));
-    
+
     m_previousMousePosition = m_currentMousePosition;
     double x, y;
     glfwGetCursorPos(glfwGetCurrentContext(), &x, &y);

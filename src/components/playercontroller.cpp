@@ -11,46 +11,12 @@ void PlayerController::start()
     if (!transform)
         throw std::runtime_error("PlayerController requires a Transform component");
 
-    auto localRotation = transform->getLocalRotationEuler();
-    m_yaw = localRotation.y;
-    m_pitch = localRotation.x;
-
-    Input::setCursorMode(GLFW_CURSOR_NORMAL);
-    Input::setMouseLookActive(false);
+    m_firstMouse = true;
+    syncRotationFromTransform();
 }
 
 void PlayerController::update(float deltaTime)
 {
-    if (Input::isGameMode())
-    {
-        if (Input::isKeyPressed(GLFW_KEY_ESCAPE))
-        {
-            Input::setMouseLookActive(false);
-            Input::setCursorMode(GLFW_CURSOR_NORMAL);
-            m_firstMouse = true;
-            return;
-        }
-    }
-    else
-    {
-        if (Input::isUiCapturing() || !Input::isGameViewFocused())
-        {
-            m_firstMouse = true;
-            return;
-        }
-
-        if (Input::getCursorMode() == GLFW_CURSOR_NORMAL)
-        {
-            if (Input::isMouseButtonDown(GLFW_MOUSE_BUTTON_LEFT))
-            {
-                Input::setMouseLookActive(true);
-                Input::setCursorMode(GLFW_CURSOR_DISABLED);
-            }
-            else
-                return;
-        }
-    }
-
     auto transform = getGameObject()->getComponent<Transform>();
     if (!transform)
         throw std::runtime_error("PlayerController requires a Transform component");
@@ -75,6 +41,12 @@ void PlayerController::update(float deltaTime)
         transform->translate(direction * m_moveSpeed * deltaTime);
     }
 
+    if (Input::getCursorMode() != GLFW_CURSOR_DISABLED)
+    {
+        m_firstMouse = true;
+        return;
+    }
+
     glm::vec2 mouseDelta = Input::getMouseDelta();
     if (m_firstMouse)
     {
@@ -89,4 +61,15 @@ void PlayerController::update(float deltaTime)
     m_yaw = std::fmod(m_yaw, 360.0f);
 
     transform->setLocalRotationEuler(glm::vec3(m_pitch, m_yaw, 0.0f));
+}
+
+void PlayerController::syncRotationFromTransform()
+{
+    auto transform = getGameObject()->getComponent<Transform>();
+    if (!transform)
+        return;
+
+    auto localRotation = transform->getLocalRotationEuler();
+    m_yaw = localRotation.y;
+    m_pitch = localRotation.x;
 }

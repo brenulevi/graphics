@@ -19,6 +19,8 @@ Application::Application()
 
 Application::~Application()
 {
+    m_playMode.stop();
+
     m_imguiLayer.reset();
     m_sceneManager.unload();
     AssetManager::clear();
@@ -37,6 +39,8 @@ void Application::run()
         m_window->pollEvents();
         Input::update();
 
+        ImGui::GetIO().MouseDrawCursor = false;
+
         m_imguiLayer->beginFrame();
 
         if (Input::isMouseLookActive())
@@ -48,12 +52,10 @@ void Application::run()
             blockedIo.MouseWheelH = 0.0f;
         }
 
-        m_sceneEditor.drawDockspace();
+        Scene& scene = m_sceneManager.getActiveScene();
 
-        if (Input::isMouseLookActive())
-            ImGui::BeginDisabled(true);
-
-        m_sceneEditor.drawPanels(m_sceneManager.getActiveScene());
+        m_sceneEditor.drawDockspace(scene, m_playMode);
+        m_sceneEditor.drawPanels(scene);
 
         if (Input::isMouseLookActive())
             ImGui::EndDisabled();
@@ -65,28 +67,40 @@ void Application::run()
             m_renderer->setViewportSize(static_cast<float>(gameViewState.width),
                                         static_cast<float>(gameViewState.height));
             m_renderer->clear();
-            m_renderSystem->render(m_sceneManager.getActiveScene(), *m_renderer);
+            m_renderSystem->render(scene, *m_renderer);
             m_gameView.unbind();
         }
         m_gameView.end();
 
-        const bool gameHasPriority = m_gameView.isActive() || Input::isGameMode();
-        Input::setGameViewFocused(gameHasPriority);
+        m_playMode.handleInput();
+        updateEditorInput(m_gameView.isActive());
 
-        ImGuiIO& io = ImGui::GetIO();
-        Input::setUiCapturing((io.WantCaptureKeyboard || io.WantCaptureMouse) && !gameHasPriority);
+        if (m_playMode.consumePlayStarted())
+            scene.start();
 
-        m_sceneManager.update(deltaTime);
-
-        // NoMouseCursorChange is set — GLFW owns the hardware cursor; never draw ImGui's software cursor.
-        io.MouseDrawCursor = false;
-
-        if (Input::isMouseLookActive())
-            Input::setCursorMode(GLFW_CURSOR_DISABLED);
+        if (m_playMode.isPlaying())
+            m_sceneManager.update(deltaTime);
 
         m_imguiLayer->endFrame(m_window->getWidth(), m_window->getHeight());
 
         m_window->swapBuffers();
+    }
+}
+
+void Application::updateEditorInput(bool gameViewActive)
+{
+    ImGuiIO& io = ImGui::GetIO();
+    const bool captureGameCursor = m_playMode.isPlaying() && gameViewActive;
+
+    if (captureGameCursor)
+    {
+        Input::setCursorMode(GLFW_CURSOR_DISABLED);
+        io.WantCaptureKeyboard = false;
+        io.WantCaptureMouse = false;
+    }
+    else
+    {
+        Input::setCursorMode(GLFW_CURSOR_NORMAL);
     }
 }
 
