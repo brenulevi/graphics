@@ -29,11 +29,14 @@ public:
     inline void setMainCamera(Camera* camera) { m_mainCamera = camera; }
 
     inline const RenderSettings& getRenderSettings() const { return m_renderSettings; }
-    inline void setRenderSettings(const RenderSettings& renderSettings) { m_renderSettings = renderSettings; }
+    inline RenderSettings& getRenderSettings() { return m_renderSettings; }
 
     GameObject* instantiateModel(const std::shared_ptr<Model>& model);
 
     GameObject* getGameObjectByName(const std::string& name) const;
+
+    std::vector<GameObject*> getGameObjects() const;
+    std::vector<GameObject*> getRootGameObjects() const;
 
 private:
     GameObject* instantiateModelNode(const ModelNode& node, const std::shared_ptr<Model>& model, GameObject* parent);

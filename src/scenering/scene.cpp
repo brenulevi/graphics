@@ -47,6 +47,26 @@ GameObject *Scene::getGameObjectByName(const std::string &name) const
     return nullptr;
 }
 
+std::vector<GameObject *> Scene::getGameObjects() const
+{
+    std::vector<GameObject *> gameObjects;
+    gameObjects.reserve(m_gameObjects.size());
+    for (const auto &gameObject : m_gameObjects)
+        gameObjects.push_back(gameObject.get());
+    return gameObjects;
+}
+
+std::vector<GameObject *> Scene::getRootGameObjects() const
+{
+    std::vector<GameObject *> rootGameObjects;
+    for (const auto &gameObject : m_gameObjects)
+    {
+        if (gameObject->getParent() == nullptr)
+            rootGameObjects.push_back(gameObject.get());
+    }
+    return rootGameObjects;
+}
+
 GameObject *Scene::instantiateModelNode(const ModelNode &node, const std::shared_ptr<Model> &model, GameObject *parent)
 {
     auto gameObject = createGameObject();

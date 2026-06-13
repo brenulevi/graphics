@@ -21,10 +21,11 @@ ShadowMap::~ShadowMap()
 
 void ShadowMap::beginRender() const
 {
+    glGetIntegerv(GL_FRAMEBUFFER_BINDING, &m_savedFramebuffer);
     m_framebuffer->bindAndSetViewport();
 }
 
 void ShadowMap::endRender() const
 {
-    m_framebuffer->unbind();
+    glBindFramebuffer(GL_FRAMEBUFFER, m_savedFramebuffer);
 }

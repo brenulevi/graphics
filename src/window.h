@@ -20,6 +20,7 @@ public:
     inline int getWidth() const { return m_width; }
     inline int getHeight() const { return m_height; }
     inline const std::string& getTitle() const { return m_title; }
+    inline GLFWwindow* getHandle() const { return m_window; }
 
     void setTitle(const std::string& title);
     void setSize(int width, int height);

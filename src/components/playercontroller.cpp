@@ -15,24 +15,39 @@ void PlayerController::start()
     m_yaw = localRotation.y;
     m_pitch = localRotation.x;
 
-    Input::setCursorMode(GLFW_CURSOR_DISABLED);
+    Input::setCursorMode(GLFW_CURSOR_NORMAL);
 }
 
 void PlayerController::update(float deltaTime)
 {
-    if(Input::isKeyPressed(GLFW_KEY_ESCAPE))
+    if (Input::isGameMode())
     {
-        if (Input::getCursorMode() == GLFW_CURSOR_DISABLED)
+        if (Input::isKeyPressed(GLFW_KEY_ESCAPE))
+        {
             Input::setCursorMode(GLFW_CURSOR_NORMAL);
-        else
-            Input::setCursorMode(GLFW_CURSOR_DISABLED);
-    }
-
-    if(Input::getCursorMode() == GLFW_CURSOR_NORMAL)
-        if(Input::isMouseButtonDown(GLFW_MOUSE_BUTTON_LEFT))
-            Input::setCursorMode(GLFW_CURSOR_DISABLED);
-        else
+            m_firstMouse = true;
             return;
+        }
+    }
+    else
+    {
+        if (Input::isUiCapturing() || !Input::isGameViewFocused())
+        {
+            m_firstMouse = true;
+            return;
+        }
+
+        if (Input::isKeyPressed(GLFW_KEY_ESCAPE))
+            Input::setCursorMode(GLFW_CURSOR_DISABLED);
+
+        if (Input::getCursorMode() == GLFW_CURSOR_NORMAL)
+        {
+            if (Input::isMouseButtonDown(GLFW_MOUSE_BUTTON_LEFT))
+                Input::setCursorMode(GLFW_CURSOR_DISABLED);
+            else
+                return;
+        }
+    }
 
     auto transform = getGameObject()->getComponent<Transform>();
     if (!transform)

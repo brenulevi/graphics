@@ -16,6 +16,12 @@ public:
     void start() override;
     void update(float deltaTime) override;
 
+    float getMoveSpeed() const { return m_moveSpeed; }
+    void setMoveSpeed(float moveSpeed) { m_moveSpeed = moveSpeed; }
+
+    float getSensitivity() const { return m_sensitivity; }
+    void setSensitivity(float sensitivity) { m_sensitivity = sensitivity; }
+
 private:
     float m_moveSpeed;
     float m_sensitivity;

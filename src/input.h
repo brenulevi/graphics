@@ -22,6 +22,13 @@ public:
 
     static inline void setCursorMode(int mode) { glfwSetInputMode(glfwGetCurrentContext(), GLFW_CURSOR, mode); }
     static inline int getCursorMode() { return glfwGetInputMode(glfwGetCurrentContext(), GLFW_CURSOR); }
+    static inline bool isGameMode() { return getCursorMode() == GLFW_CURSOR_DISABLED; }
+
+    static inline void setUiCapturing(bool capturing) { m_uiCapturing = capturing; }
+    static inline bool isUiCapturing() { return m_uiCapturing; }
+
+    static inline void setGameViewFocused(bool focused) { m_gameViewFocused = focused; }
+    static inline bool isGameViewFocused() { return m_gameViewFocused; }
 
 private:
     static glm::vec2 m_currentMousePosition;
@@ -30,5 +37,7 @@ private:
     static bool m_previousKeys[GLFW_KEY_LAST];
     static bool m_currentMouseButtons[GLFW_MOUSE_BUTTON_LAST];
     static bool m_previousMouseButtons[GLFW_MOUSE_BUTTON_LAST];
+    static bool m_uiCapturing;
+    static bool m_gameViewFocused;
 };
     

@@ -42,6 +42,22 @@ add_subdirectory(external/glfw)
 add_subdirectory(external/glad/cmake)
 add_subdirectory(external/glm)
 
+set(IMGUI_DIR ${CMAKE_SOURCE_DIR}/external/imgui)
+add_library(imgui STATIC
+    ${IMGUI_DIR}/imgui.cpp
+    ${IMGUI_DIR}/imgui_draw.cpp
+    ${IMGUI_DIR}/imgui_tables.cpp
+    ${IMGUI_DIR}/imgui_widgets.cpp
+    ${IMGUI_DIR}/backends/imgui_impl_glfw.cpp
+    ${IMGUI_DIR}/backends/imgui_impl_opengl3.cpp
+)
+target_include_directories(imgui PUBLIC
+    ${IMGUI_DIR}
+    ${IMGUI_DIR}/backends
+)
+target_link_libraries(imgui PUBLIC glfw glad)
+target_compile_definitions(imgui PUBLIC GLFW_INCLUDE_NONE)
+
 glad_add_library(glad STATIC API gl:core=3.3)
 
 # --------------------------------------------------
@@ -120,6 +136,13 @@ add_executable(MyGame
     src/scenes/demoscene.h
     src/scenes/demoscene.cpp
 
+    src/editor/imguilayer.h
+    src/editor/imguilayer.cpp
+    src/editor/sceneeditor.h
+    src/editor/sceneeditor.cpp
+    src/editor/gameview.h
+    src/editor/gameview.cpp
+
     src/systems/rendersystem.h
     src/systems/rendersystem.cpp
 
@@ -170,6 +193,7 @@ target_link_libraries(MyGame PRIVATE
     glfw
     glad
     assimp
+    imgui
     ${OPENGL_LIB}
 )
 

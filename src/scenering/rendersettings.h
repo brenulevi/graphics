@@ -23,6 +23,6 @@ public:
 private:
     bool m_skyboxEnabled = true;
     Skybox m_skybox;
-    float m_shadowDistance = 100.0f;
+    float m_shadowDistance = 10.0f;
     float m_shadowBias = 0.005f;
 };

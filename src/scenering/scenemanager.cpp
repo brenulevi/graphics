@@ -1,7 +1,5 @@
 #include "scenemanager.h"
 
-#include <stdexcept>
-
 void SceneManager::loadScene(std::unique_ptr<ISceneSetup> setup)
 {
     unload();

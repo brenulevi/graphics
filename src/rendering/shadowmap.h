@@ -31,4 +31,5 @@ private:
   int m_width;
   int m_height;
   glm::mat4 m_lightSpaceMatrix;
+  mutable int m_savedFramebuffer = 0;
 };
