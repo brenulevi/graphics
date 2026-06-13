@@ -1,5 +1,7 @@
 #include "application.h"
 
+#include "imgui.h"
+
 Application::Application()
 {
     m_window = std::make_unique<Window>(1280, 720, "Graphics Editor");
@@ -43,22 +45,10 @@ void Application::run()
 
         m_imguiLayer->beginFrame();
 
-        if (Input::isMouseLookActive())
-        {
-            ImGuiIO& blockedIo = ImGui::GetIO();
-            for (int i = 0; i < IM_ARRAYSIZE(blockedIo.MouseDown); ++i)
-                blockedIo.MouseDown[i] = false;
-            blockedIo.MouseWheel = 0.0f;
-            blockedIo.MouseWheelH = 0.0f;
-        }
-
         Scene& scene = m_sceneManager.getActiveScene();
 
         m_sceneEditor.drawDockspace(scene, m_playMode);
         m_sceneEditor.drawPanels(scene);
-
-        if (Input::isMouseLookActive())
-            ImGui::EndDisabled();
 
         GameViewState gameViewState = m_gameView.begin();
         if (gameViewState.isOpen && gameViewState.width > 0 && gameViewState.height > 0)
