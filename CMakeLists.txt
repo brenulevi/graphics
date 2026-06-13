@@ -112,6 +112,7 @@ add_executable(MyGame
     src/rendering/mesh.h
     src/rendering/mesh.cpp
     src/rendering/material.h
+    src/rendering/material.cpp
     src/rendering/texture.h
     src/rendering/texture.cpp
     src/rendering/cubemap.h

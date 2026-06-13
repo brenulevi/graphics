@@ -6,6 +6,7 @@ bool Input::m_currentMouseButtons[GLFW_MOUSE_BUTTON_LAST] = { false };
 bool Input::m_previousMouseButtons[GLFW_MOUSE_BUTTON_LAST] = { false };
 bool Input::m_uiCapturing = false;
 bool Input::m_gameViewFocused = false;
+bool Input::m_mouseLookActive = false;
 glm::vec2 Input::m_currentMousePosition = glm::vec2(0.0f);
 glm::vec2 Input::m_previousMousePosition = glm::vec2(0.0f);
 

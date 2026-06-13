@@ -27,6 +27,18 @@ void Renderer::beginScene(const SceneData &sceneData) {
 
 void Renderer::draw(const Transform &transform, const Mesh &mesh,
                     const Material &material) {
+  switch (material.getType()) {
+  case MaterialType::Standard:
+    drawStandard(transform, mesh, material);
+    break;
+  case MaterialType::Unlit:
+    drawUnlit(transform, mesh, material);
+    break;
+  }
+}
+
+void Renderer::drawStandard(const Transform &transform, const Mesh &mesh,
+                            const Material &material) {
   auto shader = material.getShader();
   auto diffuse = material.getDiffuse();
   auto specular = material.getSpecular();
@@ -110,7 +122,39 @@ void Renderer::draw(const Transform &transform, const Mesh &mesh,
                      spotLight.outerCutoff);
   }
 
-  auto viewProjectionMatrix = m_sceneData.projectionMatrix * m_sceneData.viewMatrix;
+  auto viewProjectionMatrix =
+      m_sceneData.projectionMatrix * m_sceneData.viewMatrix;
+  shader->setMat4("u_ViewProjection", viewProjectionMatrix);
+  shader->setMat4("u_Model", transform.getWorldMatrix());
+  shader->setMat4("u_LightSpaceMatrix",
+                  m_shadowMap ? m_shadowMap->getLightSpaceMatrix()
+                              : glm::mat4(1.0f));
+
+  mesh.bind();
+  glDrawElements(GL_TRIANGLES, mesh.getIndexBuffer().getCount(),
+                 GL_UNSIGNED_INT, nullptr);
+}
+
+void Renderer::drawUnlit(const Transform &transform, const Mesh &mesh,
+                         const Material &material) {
+  auto shader = material.getShader();
+  auto colorMap = material.getDiffuse();
+
+  if (!shader) {
+    throw std::runtime_error("Material has no shader!");
+  }
+
+  shader->use();
+
+  if (colorMap) {
+    colorMap->bind(0);
+    shader->setInt("u_ColorMap", 0);
+  }
+
+  shader->setVec3("u_Tint", material.getTint());
+
+  auto viewProjectionMatrix =
+      m_sceneData.projectionMatrix * m_sceneData.viewMatrix;
   shader->setMat4("u_ViewProjection", viewProjectionMatrix);
   shader->setMat4("u_Model", transform.getWorldMatrix());
 
@@ -225,13 +269,8 @@ void Renderer::setupSkybox() {
   };
 
   std::vector<unsigned int> indices;
-  for (int i = 0; i < vertices.size(); i += 3) {
+  for (unsigned int i = 0; i < vertices.size(); ++i) {
     indices.push_back(i);
-    indices.push_back(i + 1);
-    indices.push_back(i + 2);
-    indices.push_back(i + 2);
-    indices.push_back(i + 1);
-    indices.push_back(i + 3);
   }
 
   m_skyboxMesh = AssetManager::createMesh("skybox", vertices, indices);

@@ -16,6 +16,7 @@ void PlayerController::start()
     m_pitch = localRotation.x;
 
     Input::setCursorMode(GLFW_CURSOR_NORMAL);
+    Input::setMouseLookActive(false);
 }
 
 void PlayerController::update(float deltaTime)
@@ -24,6 +25,7 @@ void PlayerController::update(float deltaTime)
     {
         if (Input::isKeyPressed(GLFW_KEY_ESCAPE))
         {
+            Input::setMouseLookActive(false);
             Input::setCursorMode(GLFW_CURSOR_NORMAL);
             m_firstMouse = true;
             return;
@@ -37,13 +39,13 @@ void PlayerController::update(float deltaTime)
             return;
         }
 
-        if (Input::isKeyPressed(GLFW_KEY_ESCAPE))
-            Input::setCursorMode(GLFW_CURSOR_DISABLED);
-
         if (Input::getCursorMode() == GLFW_CURSOR_NORMAL)
         {
             if (Input::isMouseButtonDown(GLFW_MOUSE_BUTTON_LEFT))
+            {
+                Input::setMouseLookActive(true);
                 Input::setCursorMode(GLFW_CURSOR_DISABLED);
+            }
             else
                 return;
         }

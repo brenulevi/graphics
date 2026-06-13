@@ -16,6 +16,7 @@ Window::Window(int width, int height, const std::string& title)
 
     glfwMakeContextCurrent(m_window);
     glfwSetWindowUserPointer(m_window, this);
+    glfwSwapInterval(0);
 
     glfwSetFramebufferSizeCallback(m_window, [](GLFWwindow* window, int width, int height) {
         Window* win = static_cast<Window*>(glfwGetWindowUserPointer(window));

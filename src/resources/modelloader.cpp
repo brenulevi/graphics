@@ -139,37 +139,29 @@ ModelMesh ModelLoader::processMesh(const aiMesh *mesh, Model &model)
 
 std::shared_ptr<Material> ModelLoader::processMaterial(const aiMaterial *material, std::string& directory)
 {
-    auto mat = std::make_shared<Material>();
-
-    // Shader
-    mat->setShader(AssetManager::getShader("default"));
-
-    // Shininess
-    float shininess = 32.0f; // Default shininess
+    float shininess = 32.0f;
     material->Get(AI_MATKEY_SHININESS, shininess);
-    mat->setShininess(shininess);
 
-    // Diffuse texture
+    std::shared_ptr<Texture> diffuseTexture;
     aiString diffusePath;
     if (material->GetTexture(aiTextureType_DIFFUSE, 0, &diffusePath) == AI_SUCCESS)
     {
         std::string fullPath = directory + "/" + diffusePath.C_Str();
-
-        auto diffuseTexture = AssetManager::loadTexture(diffusePath.C_Str(), fullPath);
-
-        mat->setDiffuse(diffuseTexture);
+        diffuseTexture = AssetManager::loadTexture(diffusePath.C_Str(), fullPath);
     }
 
-    // Specular texture
+    std::shared_ptr<Texture> specularTexture;
     aiString specularPath;
     if (material->GetTexture(aiTextureType_SPECULAR, 0, &specularPath) == AI_SUCCESS)
     {
         std::string fullPath = directory + "/" + specularPath.C_Str();
-
-        auto specularTexture = AssetManager::loadTexture(specularPath.C_Str(), fullPath);
-
-        mat->setSpecular(specularTexture);
+        specularTexture = AssetManager::loadTexture(specularPath.C_Str(), fullPath);
     }
 
-    return mat;
+    return Material::createStandard(
+        AssetManager::getShader("default"),
+        diffuseTexture,
+        specularTexture,
+        shininess
+    );
 }

@@ -39,6 +39,8 @@ public:
     inline float getAspectRatio() const { return m_viewportSize.x / m_viewportSize.y; }
 
 private:
+    void drawStandard(const Transform& transform, const Mesh& mesh, const Material& material);
+    void drawUnlit(const Transform& transform, const Mesh& mesh, const Material& material);
     void setupSkybox();
 
 private:

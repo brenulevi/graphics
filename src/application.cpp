@@ -39,8 +39,24 @@ void Application::run()
 
         m_imguiLayer->beginFrame();
 
+        if (Input::isMouseLookActive())
+        {
+            ImGuiIO& blockedIo = ImGui::GetIO();
+            for (int i = 0; i < IM_ARRAYSIZE(blockedIo.MouseDown); ++i)
+                blockedIo.MouseDown[i] = false;
+            blockedIo.MouseWheel = 0.0f;
+            blockedIo.MouseWheelH = 0.0f;
+        }
+
         m_sceneEditor.drawDockspace();
+
+        if (Input::isMouseLookActive())
+            ImGui::BeginDisabled(true);
+
         m_sceneEditor.drawPanels(m_sceneManager.getActiveScene());
+
+        if (Input::isMouseLookActive())
+            ImGui::EndDisabled();
 
         GameViewState gameViewState = m_gameView.begin();
         if (gameViewState.isOpen && gameViewState.width > 0 && gameViewState.height > 0)
@@ -62,8 +78,10 @@ void Application::run()
 
         m_sceneManager.update(deltaTime);
 
-        io.MouseDrawCursor = !Input::isGameMode();
-        if (Input::isGameMode())
+        // NoMouseCursorChange is set — GLFW owns the hardware cursor; never draw ImGui's software cursor.
+        io.MouseDrawCursor = false;
+
+        if (Input::isMouseLookActive())
             Input::setCursorMode(GLFW_CURSOR_DISABLED);
 
         m_imguiLayer->endFrame(m_window->getWidth(), m_window->getHeight());

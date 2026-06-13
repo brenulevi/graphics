@@ -5,9 +5,11 @@ std::unordered_map<std::string, std::shared_ptr<Texture>> AssetManager::s_textur
 std::unordered_map<std::string, std::shared_ptr<Cubemap>> AssetManager::s_cubemaps;
 std::unordered_map<std::string, std::shared_ptr<Shader>> AssetManager::s_shaders;
 std::unordered_map<std::string, std::shared_ptr<Model>> AssetManager::s_models;
+std::unordered_map<std::string, std::shared_ptr<Material>> AssetManager::s_materials;
 
 void AssetManager::clear()
 {
+    s_materials.clear();
     s_models.clear();
     s_shaders.clear();
     s_cubemaps.clear();
@@ -91,4 +93,17 @@ std::shared_ptr<Model> AssetManager::loadModel(const std::string &name, const st
     auto model = ModelLoader::loadFromFile(filepath);
     s_models[name] = model;
     return model;
+}
+
+std::shared_ptr<Material> AssetManager::registerMaterial(
+    const std::string &name, std::shared_ptr<Material> material)
+{
+    auto it = s_materials.find(name);
+    if (it != s_materials.end())
+    {
+        return it->second;
+    }
+
+    s_materials[name] = material;
+    return material;
 }

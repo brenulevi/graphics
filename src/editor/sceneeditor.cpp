@@ -218,9 +218,20 @@ void SceneEditor::drawMeshRenderer(GameObject* gameObject)
 
     if (auto* material = meshRenderer->getMaterial())
     {
-        float shininess = material->getShininess();
-        if (ImGui::DragFloat("Shininess", &shininess, 0.5f, 1.0f, 256.0f))
-            material->setShininess(shininess);
+        ImGui::Text("Type: %s", material->getTypeName());
+
+        if (material->getType() == MaterialType::Standard)
+        {
+            float shininess = material->getShininess();
+            if (ImGui::DragFloat("Shininess", &shininess, 0.5f, 1.0f, 256.0f))
+                material->setShininess(shininess);
+        }
+        else if (material->getType() == MaterialType::Unlit)
+        {
+            glm::vec3 tint = material->getTint();
+            if (ImGui::ColorEdit3("Tint", &tint.x))
+                material->setTint(tint);
+        }
     }
 }
 
